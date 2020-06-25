@@ -18,25 +18,35 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Filter for the Google Closure Stylesheets Compiler JAR.
  *
- * @link http://code.google.com/p/closure-stylesheets/
  * @author Matthias Krauser <matthias@krauser.eu>
+ *
+ * @see http://code.google.com/p/closure-stylesheets/
  */
 class GssFilter extends BaseProcessFilter
 {
     private $jarPath;
+
     private $javaPath;
+
     private $allowUnrecognizedFunctions;
+
     private $allowedNonStandardFunctions;
+
     private $copyrightNotice;
+
     private $define;
+
     private $gssFunctionMapProvider;
+
     private $inputOrientation;
+
     private $outputOrientation;
+
     private $prettyPrint;
 
     public function __construct($jarPath, $javaPath = '/usr/bin/java')
     {
-        $this->jarPath = $jarPath;
+        $this->jarPath  = $jarPath;
         $this->javaPath = $javaPath;
     }
 
@@ -82,13 +92,13 @@ class GssFilter extends BaseProcessFilter
 
     public function filterLoad(AssetInterface $asset)
     {
-        $cleanup = array();
+        $cleanup = [];
 
-        $pb = $this->createProcessBuilder(array(
+        $pb = $this->createProcessBuilder([
             $this->javaPath,
             '-jar',
             $this->jarPath,
-        ));
+        ]);
 
         if (null !== $this->allowUnrecognizedFunctions) {
             $pb->add('--allow-unrecognized-functions');
@@ -123,11 +133,11 @@ class GssFilter extends BaseProcessFilter
         }
 
         $pb->add($cleanup[] = $input = FilesystemUtils::createTemporaryFile('gss'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        array_map('unlink', $cleanup);
+        \array_map('unlink', $cleanup);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());

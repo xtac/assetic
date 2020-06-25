@@ -11,9 +11,11 @@
 
 namespace Assetic\Filter;
 
+use Assetic\ProcessBuilder;
+
 abstract class BaseNodeFilter extends BaseProcessFilter
 {
-    private $nodePaths = array();
+    private $nodePaths = [];
 
     public function getNodePaths()
     {
@@ -30,13 +32,13 @@ abstract class BaseNodeFilter extends BaseProcessFilter
         $this->nodePaths[] = $nodePath;
     }
 
-    protected function createProcessBuilder(array $arguments = array())
+    protected function createProcessBuilder(array $arguments = []): ProcessBuilder
     {
         $pb = parent::createProcessBuilder($arguments);
 
         if ($this->nodePaths) {
             $this->mergeEnv($pb);
-            $pb->setEnv('NODE_PATH', implode(PATH_SEPARATOR, $this->nodePaths));
+            $pb->setEnv('NODE_PATH', \implode(PATH_SEPARATOR, $this->nodePaths));
         }
 
         return $pb;

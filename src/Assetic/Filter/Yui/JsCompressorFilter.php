@@ -16,13 +16,16 @@ use Assetic\Asset\AssetInterface;
 /**
  * Javascript YUI compressor filter.
  *
- * @link http://developer.yahoo.com/yui/compressor/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://developer.yahoo.com/yui/compressor/
  */
 class JsCompressorFilter extends BaseCompressorFilter
 {
     private $nomunge;
+
     private $preserveSemi;
+
     private $disableOptimizations;
 
     public function setNomunge($nomunge = true)
@@ -42,7 +45,7 @@ class JsCompressorFilter extends BaseCompressorFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $options = array();
+        $options = [];
 
         if ($this->nomunge) {
             $options[] = '--nomunge';

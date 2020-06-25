@@ -18,8 +18,9 @@ use Assetic\Asset\AssetInterface;
  *
  * All credit for the filter itself is mentioned in the file itself.
  *
- * @link https://raw.github.com/mrclay/minify/master/min/lib/JSMin.php
  * @author Brunoais <brunoaiss@gmail.com>
+ *
+ * @see https://raw.github.com/mrclay/minify/master/min/lib/JSMin.php
  */
 class JSMinFilter implements FilterInterface
 {

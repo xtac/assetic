@@ -13,64 +13,150 @@ namespace Assetic\Extension\Twig;
 
 use Assetic\Factory\AssetFactory;
 use Assetic\ValueSupplierInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
+use Twig\TwigFunction;
 
-class AsseticExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class AsseticExtension extends AbstractExtension implements GlobalsInterface
 {
-    protected $factory;
-    protected $functions;
-    protected $valueSupplier;
+    /**
+     * @var \Assetic\Factory\AssetFactory
+     */
+    private $factory;
 
-    public function __construct(AssetFactory $factory, $functions = array(), ValueSupplierInterface $valueSupplier = null)
+    /**
+     * @var array
+     */
+    private $functions;
+
+    /**
+     * @var \Assetic\ValueSupplierInterface
+     */
+    private $valueSupplier;
+
+    /**
+     * @var bool
+     */
+    private $dynamicRoute = false;
+
+    /**
+     * AsseticExtension constructor.
+     *
+     * @param \Assetic\Factory\AssetFactory        $factory
+     * @param array                                $functions
+     * @param null|\Assetic\ValueSupplierInterface $valueSupplier
+     */
+    public function __construct(AssetFactory $factory, $functions = [], ValueSupplierInterface $valueSupplier = null)
     {
-        $this->factory = $factory;
-        $this->functions = array();
+        $this->factory       = $factory;
+        $this->functions     = [];
         $this->valueSupplier = $valueSupplier;
 
         foreach ($functions as $function => $options) {
-            if (is_integer($function) && is_string($options)) {
-                $this->functions[$options] = array('filter' => $options);
+            if (\is_int($function) && \is_string($options)) {
+                $this->functions[$options] = ['filter' => $options];
             } else {
-                $this->functions[$function] = $options + array('filter' => $function);
+                $this->functions[$function] = $options + ['filter' => $function];
             }
         }
     }
 
+    /**
+     * @return void
+     */
+    public function enableDynamicRoute()
+    {
+        $this->dynamicRoute = true;
+    }
+
+    /**
+     * @return void
+     */
+    public function disableDynamicRoute()
+    {
+        $this->dynamicRoute = false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getTokenParsers()
     {
-        return array(
+        return [
             new AsseticTokenParser($this->factory, 'javascripts', 'js/*.js'),
             new AsseticTokenParser($this->factory, 'stylesheets', 'css/*.css'),
             new AsseticTokenParser($this->factory, 'image', 'images/*', true),
-        );
+        ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFunctions()
     {
-        $functions = array();
+        $functions = [
+            new TwigFunction('asset', [$this, 'assetFunction']),
+        ];
         foreach ($this->functions as $function => $filter) {
-            $functions[] = new AsseticFilterFunction($function);
+            $functions[] = new TwigFunction($function, null, [
+                'needs_environment' => false,
+                'needs_context'     => false,
+                'node_class'        => '\Assetic\Extension\Twig\AsseticFilterNode',
+            ]);
         }
 
         return $functions;
     }
 
-    public function getGlobals()
+    /**
+     * {@inheritdoc}
+     */
+    public function getGlobals(): array
     {
-        return array(
-            'assetic' => array(
-                'debug' => $this->factory->isDebug(),
-                'vars'  => null !== $this->valueSupplier ? new ValueContainer($this->valueSupplier) : array(),
-            ),
-        );
+        return [
+            'assetic' => [
+                'debug'         => $this->factory->isDebug(),
+                'vars'          => null !== $this->valueSupplier ? new ValueContainer($this->valueSupplier) : [],
+                'dynamic.route' => $this->dynamicRoute,
+            ],
+        ];
     }
 
+    /**
+     * @param string $function
+     *
+     * @return \Assetic\Extension\Twig\AsseticFilterInvoker
+     */
     public function getFilterInvoker($function)
     {
         return new AsseticFilterInvoker($this->factory, $this->functions[$function]);
     }
 
-    public function getName()
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    public function assetFunction($url)
     {
-        return 'assetic';
+        if ($this->isAbsolutePath($url)) {
+            return $url;
+        }
+
+        return '/' . $url;
+    }
+
+    private function isAbsolutePath($path)
+    {
+        // @formatter:off
+        if ('/' === $path[0] || '\\' === $path[0]
+            || (\strlen($path) > 3 && \ctype_alpha($path[0]) && ':' === $path[1] && ('\\' === $path[2] || '/' === $path[2]))
+            || null !== \parse_url($path, PHP_URL_SCHEME)
+        ) {
+            return true;
+        }
+        // @formatter:on
+
+        return false;
     }
 }

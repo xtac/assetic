@@ -23,6 +23,7 @@ use Assetic\Filter\HashableInterface;
 class AssetCache implements AssetInterface
 {
     private $asset;
+
     private $cache;
 
     public function __construct(AssetInterface $asset, CacheInterface $cache)
@@ -160,15 +161,15 @@ class AssetCache implements AssetInterface
             if ($filter instanceof HashableInterface) {
                 $cacheKey .= $filter->hash();
             } else {
-                $cacheKey .= serialize($filter);
+                $cacheKey .= \serialize($filter);
             }
         }
 
         if ($values = $asset->getValues()) {
-            asort($values);
-            $cacheKey .= serialize($values);
+            \asort($values);
+            $cacheKey .= \serialize($values);
         }
 
-        return md5($cacheKey.$salt);
+        return \md5($cacheKey . $salt);
     }
 }

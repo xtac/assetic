@@ -18,10 +18,12 @@ namespace Assetic\Cache;
  */
 class ArrayCache implements CacheInterface
 {
-    private $cache = array();
+    private $cache = [];
 
     /**
      * @see CacheInterface::has()
+     *
+     * @param mixed $key
      */
     public function has($key)
     {
@@ -30,11 +32,13 @@ class ArrayCache implements CacheInterface
 
     /**
      * @see CacheInterface::get()
+     *
+     * @param mixed $key
      */
     public function get($key)
     {
         if (!$this->has($key)) {
-            throw new \RuntimeException('There is no cached value for '.$key);
+            throw new \RuntimeException('There is no cached value for ' . $key);
         }
 
         return $this->cache[$key];
@@ -42,6 +46,9 @@ class ArrayCache implements CacheInterface
 
     /**
      * @see CacheInterface::set()
+     *
+     * @param mixed $key
+     * @param mixed $value
      */
     public function set($key, $value)
     {
@@ -50,6 +57,8 @@ class ArrayCache implements CacheInterface
 
     /**
      * @see CacheInterface::remove()
+     *
+     * @param mixed $key
      */
     public function remove($key)
     {

@@ -19,18 +19,21 @@ use Symfony\Component\Process\ProcessBuilder;
 /**
  * Filter for the Google Closure Compiler JAR.
  *
- * @link https://developers.google.com/closure/compiler/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see https://developers.google.com/closure/compiler/
  */
 class CompilerJarFilter extends BaseCompilerFilter
 {
     private $jarPath;
+
     private $javaPath;
+
     private $flagFile;
 
     public function __construct($jarPath, $javaPath = '/usr/bin/java')
     {
-        $this->jarPath = $jarPath;
+        $this->jarPath  = $jarPath;
         $this->javaPath = $javaPath;
     }
 
@@ -42,14 +45,14 @@ class CompilerJarFilter extends BaseCompilerFilter
     public function filterDump(AssetInterface $asset)
     {
         $is64bit = PHP_INT_SIZE === 8;
-        $cleanup = array();
+        $cleanup = [];
 
-        $pb = new ProcessBuilder(array_merge(
-            array($this->javaPath),
+        $pb = new ProcessBuilder(\array_merge(
+            [$this->javaPath],
             $is64bit
-                ? array('-server', '-XX:+TieredCompilation')
-                : array('-client', '-d32'),
-            array('-jar', $this->jarPath)
+                ? ['-server', '-XX:+TieredCompilation']
+                : ['-client', '-d32'],
+            ['-jar', $this->jarPath]
         ));
 
         if (null !== $this->timeout) {
@@ -62,13 +65,13 @@ class CompilerJarFilter extends BaseCompilerFilter
 
         if (null !== $this->jsExterns) {
             $cleanup[] = $externs = FilesystemUtils::createTemporaryFile('google_closure');
-            file_put_contents($externs, $this->jsExterns);
+            \file_put_contents($externs, $this->jsExterns);
             $pb->add('--externs')->add($externs);
         }
 
         if (null !== $this->externsUrl) {
             $cleanup[] = $externs = FilesystemUtils::createTemporaryFile('google_closure');
-            file_put_contents($externs, file_get_contents($this->externsUrl));
+            \file_put_contents($externs, \file_get_contents($this->externsUrl));
             $pb->add('--externs')->add($externs);
         }
 
@@ -97,11 +100,11 @@ class CompilerJarFilter extends BaseCompilerFilter
         }
 
         $pb->add('--js')->add($cleanup[] = $input = FilesystemUtils::createTemporaryFile('google_closure'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        array_map('unlink', $cleanup);
+        \array_map('unlink', $cleanup);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());

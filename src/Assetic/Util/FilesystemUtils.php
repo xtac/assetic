@@ -20,6 +20,8 @@ class FilesystemUtils
 {
     /**
      * Recursively removes a directory from the filesystem.
+     *
+     * @param mixed $directory
      */
     public static function removeDirectory($directory)
     {
@@ -29,21 +31,21 @@ class FilesystemUtils
         // remove the files first
         foreach ($outer as $file) {
             if ($file->isFile()) {
-                unlink($file);
+                \unlink($file);
             }
         }
 
         // remove the sub-directories next
-        $files = iterator_to_array($outer);
-        foreach (array_reverse($files) as $file) {
+        $files = \iterator_to_array($outer);
+        foreach (\array_reverse($files) as $file) {
             /** @var \SplFileInfo $file */
             if ($file->isDir()) {
-                rmdir($file);
+                \rmdir($file);
             }
         }
 
         // finally the directory itself
-        rmdir($directory);
+        \rmdir($directory);
     }
 
     /**
@@ -59,8 +61,8 @@ class FilesystemUtils
      */
     public static function createThrowAwayDirectory($prefix)
     {
-        $directory = self::getTemporaryDirectory().DIRECTORY_SEPARATOR.uniqid('assetic_'.$prefix);
-        mkdir($directory);
+        $directory = self::getTemporaryDirectory() . DIRECTORY_SEPARATOR . \uniqid('assetic_' . $prefix);
+        \mkdir($directory);
 
         return $directory;
     }
@@ -74,11 +76,11 @@ class FilesystemUtils
      */
     public static function createTemporaryFile($prefix)
     {
-        return tempnam(self::getTemporaryDirectory(), 'assetic_'.$prefix);
+        return \tempnam(self::getTemporaryDirectory(), 'assetic_' . $prefix);
     }
 
     public static function getTemporaryDirectory()
     {
-        return realpath(sys_get_temp_dir());
+        return \realpath(\sys_get_temp_dir());
     }
 }

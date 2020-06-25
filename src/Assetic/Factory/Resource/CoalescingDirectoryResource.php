@@ -22,7 +22,7 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
 
     public function __construct($directories)
     {
-        $this->directories = array();
+        $this->directories = [];
 
         foreach ($directories as $directory) {
             $this->addDirectory($directory);
@@ -47,12 +47,12 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
 
     public function getContent()
     {
-        $parts = array();
+        $parts = [];
         foreach ($this->getFileResources() as $file) {
             $parts[] = $file->getContent();
         }
 
-        return implode("\n", $parts);
+        return \implode("\n", $parts);
     }
 
     /**
@@ -62,12 +62,12 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
      */
     public function __toString()
     {
-        $parts = array();
+        $parts = [];
         foreach ($this->directories as $directory) {
             $parts[] = (string) $directory;
         }
 
-        return implode(',', $parts);
+        return \implode(',', $parts);
     }
 
     public function getIterator()
@@ -85,7 +85,7 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
      */
     protected function getRelativeName(ResourceInterface $file, ResourceInterface $directory)
     {
-        return substr((string) $file, strlen((string) $directory));
+        return \substr((string) $file, \strlen((string) $directory));
     }
 
     /**
@@ -95,7 +95,7 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
      */
     private function getFileResources()
     {
-        $paths = array();
+        $paths = [];
 
         foreach ($this->directories as $directory) {
             foreach ($directory as $file) {
@@ -107,6 +107,6 @@ class CoalescingDirectoryResource implements IteratorResourceInterface
             }
         }
 
-        return array_values($paths);
+        return \array_values($paths);
     }
 }

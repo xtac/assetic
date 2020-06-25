@@ -18,19 +18,24 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Runs assets through jpegtran.
  *
- * @link http://jpegclub.org/jpegtran/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://jpegclub.org/jpegtran/
  */
 class JpegtranFilter extends BaseProcessFilter
 {
-    const COPY_NONE = 'none';
+    const COPY_NONE     = 'none';
     const COPY_COMMENTS = 'comments';
-    const COPY_ALL = 'all';
+    const COPY_ALL      = 'all';
 
     private $jpegtranBin;
+
     private $optimize;
+
     private $copy;
+
     private $progressive;
+
     private $restart;
 
     /**
@@ -69,7 +74,7 @@ class JpegtranFilter extends BaseProcessFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $pb = $this->createProcessBuilder(array($this->jpegtranBin));
+        $pb = $this->createProcessBuilder([$this->jpegtranBin]);
 
         if ($this->optimize) {
             $pb->add('-optimize');
@@ -88,11 +93,11 @@ class JpegtranFilter extends BaseProcessFilter
         }
 
         $pb->add($input = FilesystemUtils::createTemporaryFile('jpegtran'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());

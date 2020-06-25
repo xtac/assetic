@@ -16,8 +16,9 @@ use Assetic\Asset\AssetInterface;
 /**
  * CSS YUI compressor filter.
  *
- * @link http://developer.yahoo.com/yui/compressor/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://developer.yahoo.com/yui/compressor/
  */
 class CssCompressorFilter extends BaseCompressorFilter
 {

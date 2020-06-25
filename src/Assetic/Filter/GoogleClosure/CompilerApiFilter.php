@@ -16,12 +16,14 @@ use Assetic\Asset\AssetInterface;
 /**
  * Filter for the Google Closure Compiler API.
  *
- * @link https://developers.google.com/closure/compiler/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see https://developers.google.com/closure/compiler/
  */
 class CompilerApiFilter extends BaseCompilerFilter
 {
     private $proxy;
+
     private $proxyFullUri;
 
     public function setProxy($proxy)
@@ -36,11 +38,11 @@ class CompilerApiFilter extends BaseCompilerFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $query = array(
+        $query = [
             'js_code'       => $asset->getContent(),
             'output_format' => 'json',
             'output_info'   => 'compiled_code',
-        );
+        ];
 
         if (null !== $this->compilationLevel) {
             $query['compilation_level'] = $this->compilationLevel;
@@ -74,54 +76,54 @@ class CompilerApiFilter extends BaseCompilerFilter
             $query['language'] = $this->language;
         }
 
-        if (preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'))) {
-            $contextOptions = array('http' => array(
+        if (\preg_match('/1|yes|on|true/i', \ini_get('allow_url_fopen'))) {
+            $contextOptions = ['http' => [
                 'method'  => 'POST',
                 'header'  => 'Content-Type: application/x-www-form-urlencoded',
-                'content' => http_build_query($query),
-            ));
+                'content' => \http_build_query($query),
+            ]];
             if (null !== $this->timeout) {
                 $contextOptions['http']['timeout'] = $this->timeout;
             }
             if ($this->proxy) {
-                $contextOptions['http']['proxy'] = $this->proxy;
-                $contextOptions['http']['request_fulluri'] = (Boolean) $this->proxyFullUri;
+                $contextOptions['http']['proxy']           = $this->proxy;
+                $contextOptions['http']['request_fulluri'] = (bool) $this->proxyFullUri;
             }
-            $context = stream_context_create($contextOptions);
+            $context = \stream_context_create($contextOptions);
 
-            $response = file_get_contents('http://closure-compiler.appspot.com/compile', false, $context);
-            $data = json_decode($response);
-        } elseif (defined('CURLOPT_POST') && !in_array('curl_init', explode(',', ini_get('disable_functions')))) {
-            $ch = curl_init('http://closure-compiler.appspot.com/compile');
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            $response = \file_get_contents('http://closure-compiler.appspot.com/compile', false, $context);
+            $data     = \json_decode($response);
+        } elseif (\defined('CURLOPT_POST') && !\in_array('curl_init', \explode(',', \ini_get('disable_functions')))) {
+            $ch = \curl_init('http://closure-compiler.appspot.com/compile');
+            \curl_setopt($ch, CURLOPT_POST, true);
+            \curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: application/x-www-form-urlencoded']);
+            \curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            \curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+            \curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
             if (null !== $this->timeout) {
-                curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+                \curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
             }
             if ($this->proxy) {
-                curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-                curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+                \curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+                \curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
             }
-            $response = curl_exec($ch);
-            curl_close($ch);
+            $response = \curl_exec($ch);
+            \curl_close($ch);
 
-            $data = json_decode($response);
+            $data = \json_decode($response);
         } else {
-            throw new \RuntimeException("There is no known way to contact closure compiler available");
+            throw new \RuntimeException('There is no known way to contact closure compiler available');
         }
 
-        if (isset($data->serverErrors) && 0 < count($data->serverErrors)) {
+        if (isset($data->serverErrors) && 0 < \count($data->serverErrors)) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(sprintf('The Google Closure Compiler API threw some server errors: '.print_r($data->serverErrors, true)));
+            throw new \RuntimeException(\sprintf('The Google Closure Compiler API threw some server errors: ' . \print_r($data->serverErrors, true)));
             // @codeCoverageIgnoreEnd
         }
 
-        if (isset($data->errors) && 0 < count($data->errors)) {
+        if (isset($data->errors) && 0 < \count($data->errors)) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException(sprintf('The Google Closure Compiler API threw some errors: '.print_r($data->errors, true)));
+            throw new \RuntimeException(\sprintf('The Google Closure Compiler API threw some errors: ' . \print_r($data->errors, true)));
             // @codeCoverageIgnoreEnd
         }
 

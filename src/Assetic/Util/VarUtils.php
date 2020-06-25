@@ -25,51 +25,51 @@ abstract class VarUtils
      * @param array  $vars     Variable names
      * @param array  $values   Variable values
      *
-     * @return string The resolved string
-     *
      * @throws \InvalidArgumentException If there is a variable with no value
+     *
+     * @return string The resolved string
      */
     public static function resolve($template, array $vars, array $values)
     {
-        $map = array();
+        $map = [];
         foreach ($vars as $var) {
-            if (false === strpos($template, '{'.$var.'}')) {
+            if (false === \strpos($template, '{' . $var . '}')) {
                 continue;
             }
 
             if (!isset($values[$var])) {
-                throw new \InvalidArgumentException(sprintf('The template "%s" contains the variable "%s", but was not given any value for it.', $template, $var));
+                throw new \InvalidArgumentException(\sprintf('The template "%s" contains the variable "%s", but was not given any value for it.', $template, $var));
             }
 
-            $map['{'.$var.'}'] = $values[$var];
+            $map['{' . $var . '}'] = $values[$var];
         }
 
-        return strtr($template, $map);
+        return \strtr($template, $map);
     }
 
     public static function getCombinations(array $vars, array $values)
     {
         if (!$vars) {
-            return array(array());
+            return [[]];
         }
 
-        $combinations = array();
-        $nbValues = array();
+        $combinations = [];
+        $nbValues     = [];
         foreach ($values as $var => $vals) {
-            if (!in_array($var, $vars, true)) {
+            if (!\in_array($var, $vars, true)) {
                 continue;
             }
 
-            $nbValues[$var] = count($vals);
+            $nbValues[$var] = \count($vals);
         }
 
-        for ($i = array_product($nbValues), $c = $i * 2; $i < $c; $i++) {
-            $k = $i;
-            $combination = array();
+        for ($i = \array_product($nbValues), $c = $i * 2; $i < $c; $i++) {
+            $k           = $i;
+            $combination = [];
 
             foreach ($vars as $var) {
                 $combination[$var] = $values[$var][$k % $nbValues[$var]];
-                $k = intval($k / $nbValues[$var]);
+                $k                 = \intval($k / $nbValues[$var]);
             }
 
             $combinations[] = $combination;

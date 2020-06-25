@@ -25,7 +25,9 @@ use Assetic\Factory\Resource\ResourceInterface;
 class CachedFormulaLoader implements FormulaLoaderInterface
 {
     private $loader;
+
     private $configCache;
+
     private $debug;
 
     /**
@@ -36,22 +38,22 @@ class CachedFormulaLoader implements FormulaLoaderInterface
      *
      * @param FormulaLoaderInterface $loader      A formula loader
      * @param ConfigCache            $configCache A config cache
-     * @param Boolean                $debug       The debug mode
+     * @param bool                   $debug       The debug mode
      */
     public function __construct(FormulaLoaderInterface $loader, ConfigCache $configCache, $debug = false)
     {
-        $this->loader = $loader;
+        $this->loader      = $loader;
         $this->configCache = $configCache;
-        $this->debug = $debug;
+        $this->debug       = $debug;
     }
 
     public function load(ResourceInterface $resources)
     {
         if (!$resources instanceof IteratorResourceInterface) {
-            $resources = array($resources);
+            $resources = [$resources];
         }
 
-        $formulae = array();
+        $formulae = [];
 
         foreach ($resources as $resource) {
             $id = (string) $resource;

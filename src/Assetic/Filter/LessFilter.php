@@ -20,8 +20,9 @@ use Assetic\Util\LessUtils;
 /**
  * Loads LESS files.
  *
- * @link http://lesscss.org/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://lesscss.org/
  */
 class LessFilter extends BaseNodeFilter implements DependencyExtractorInterface
 {
@@ -44,7 +45,7 @@ class LessFilter extends BaseNodeFilter implements DependencyExtractorInterface
      *
      * @var array
      */
-    protected $loadPaths = array();
+    protected $loadPaths = [];
 
     /**
      * Constructor.
@@ -52,12 +53,12 @@ class LessFilter extends BaseNodeFilter implements DependencyExtractorInterface
      * @param string $nodeBin   The path to the node binary
      * @param array  $nodePaths An array of node paths
      */
-    public function __construct($nodeBin = '/usr/bin/node', array $nodePaths = array())
+    public function __construct($nodeBin = '/usr/bin/node', array $nodePaths = [])
     {
         $this->nodeBin = $nodeBin;
         $this->setNodePaths($nodePaths);
-        $this->treeOptions = array();
-        $this->parserOptions = array();
+        $this->treeOptions   = [];
+        $this->parserOptions = [];
     }
 
     /**
@@ -129,8 +130,8 @@ EOF;
         // parser options
         $parserOptions = $this->parserOptions;
         if ($dir = $asset->getSourceDirectory()) {
-            $parserOptions['paths'] = array($dir);
-            $parserOptions['filename'] = basename($asset->getSourcePath());
+            $parserOptions['paths']    = [$dir];
+            $parserOptions['filename'] = \basename($asset->getSourcePath());
         }
 
         foreach ($this->loadPaths as $loadPath) {
@@ -140,14 +141,15 @@ EOF;
         $pb = $this->createProcessBuilder();
 
         $pb->add($this->nodeBin)->add($input = FilesystemUtils::createTemporaryFile('less'));
-        file_put_contents($input, sprintf($format,
-            json_encode($asset->getContent()),
-            json_encode(array_merge($parserOptions, $this->treeOptions))
+        \file_put_contents($input, \sprintf(
+            $format,
+            \json_encode($asset->getContent()),
+            \json_encode(\array_merge($parserOptions, $this->treeOptions))
         ));
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
@@ -163,6 +165,10 @@ EOF;
     /**
      * @todo support for import-once
      * @todo support for import (less) "lib.css"
+     *
+     * @param AssetFactory $factory
+     * @param mixed        $content
+     * @param null|mixed   $loadPath
      */
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
@@ -172,24 +178,24 @@ EOF;
         }
 
         if (empty($loadPaths)) {
-            return array();
+            return [];
         }
 
-        $children = array();
+        $children = [];
         foreach (LessUtils::extractImports($content) as $reference) {
-            if ('.css' === substr($reference, -4)) {
+            if ('.css' === \substr($reference, -4)) {
                 // skip normal css imports
                 // todo: skip imports with media queries
                 continue;
             }
 
-            if ('.less' !== substr($reference, -5)) {
+            if ('.less' !== \substr($reference, -5)) {
                 $reference .= '.less';
             }
 
             foreach ($loadPaths as $loadPath) {
-                if (file_exists($file = $loadPath.'/'.$reference)) {
-                    $coll = $factory->createAsset($file, array(), array('root' => $loadPath));
+                if (\file_exists($file = $loadPath . '/' . $reference)) {
+                    $coll = $factory->createAsset($file, [], ['root' => $loadPath]);
                     foreach ($coll as $leaf) {
                         $leaf->ensureFilter($this);
                         $children[] = $leaf;

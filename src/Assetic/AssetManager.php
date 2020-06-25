@@ -20,21 +20,21 @@ use Assetic\Asset\AssetInterface;
  */
 class AssetManager
 {
-    private $assets = array();
+    private $assets = [];
 
     /**
      * Gets an asset by name.
      *
      * @param string $name The asset name
      *
-     * @return AssetInterface The asset
-     *
      * @throws \InvalidArgumentException If there is no asset by that name
+     *
+     * @return AssetInterface The asset
      */
     public function get($name)
     {
         if (!isset($this->assets[$name])) {
-            throw new \InvalidArgumentException(sprintf('There is no "%s" asset.', $name));
+            throw new \InvalidArgumentException(\sprintf('There is no "%s" asset.', $name));
         }
 
         return $this->assets[$name];
@@ -45,7 +45,7 @@ class AssetManager
      *
      * @param string $name an asset name
      *
-     * @return Boolean True if the asset has been set, false if not
+     * @return bool True if the asset has been set, false if not
      */
     public function has($name)
     {
@@ -62,8 +62,8 @@ class AssetManager
      */
     public function set($name, AssetInterface $asset)
     {
-        if (!ctype_alnum(str_replace('_', '', $name))) {
-            throw new \InvalidArgumentException(sprintf('The name "%s" is invalid.', $name));
+        if (!\ctype_alnum(\str_replace('_', '', $name))) {
+            throw new \InvalidArgumentException(\sprintf('The name "%s" is invalid.', $name));
         }
 
         $this->assets[$name] = $asset;
@@ -76,7 +76,7 @@ class AssetManager
      */
     public function getNames()
     {
-        return array_keys($this->assets);
+        return \array_keys($this->assets);
     }
 
     /**
@@ -84,6 +84,6 @@ class AssetManager
      */
     public function clear()
     {
-        $this->assets = array();
+        $this->assets = [];
     }
 }

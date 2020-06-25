@@ -21,6 +21,7 @@ use Assetic\ValueSupplierInterface;
 class ValueContainer implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     private $values;
+
     private $valueSupplier;
 
     public function __construct(ValueSupplierInterface $valueSupplier)
@@ -32,15 +33,15 @@ class ValueContainer implements \ArrayAccess, \IteratorAggregate, \Countable
     {
         $this->initialize();
 
-        return array_key_exists($offset, $this->values);
+        return \array_key_exists($offset, $this->values);
     }
 
     public function offsetGet($offset)
     {
         $this->initialize();
 
-        if (!array_key_exists($offset, $this->values)) {
-            throw new \OutOfRangeException(sprintf('The variable "%s" does not exist.', $offset));
+        if (!\array_key_exists($offset, $this->values)) {
+            throw new \OutOfRangeException(\sprintf('The variable "%s" does not exist.', $offset));
         }
 
         return $this->values[$offset];
@@ -67,7 +68,7 @@ class ValueContainer implements \ArrayAccess, \IteratorAggregate, \Countable
     {
         $this->initialize();
 
-        return count($this->values);
+        return \count($this->values);
     }
 
     private function initialize()

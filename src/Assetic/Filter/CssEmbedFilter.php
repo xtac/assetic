@@ -19,24 +19,33 @@ use Assetic\Util\FilesystemUtils;
 /**
  * CSSEmbed filter
  *
- * @link https://github.com/nzakas/cssembed
  * @author Maxime Thirouin <maxime.thirouin@gmail.com>
+ *
+ * @see https://github.com/nzakas/cssembed
  */
 class CssEmbedFilter extends BaseProcessFilter implements DependencyExtractorInterface
 {
     private $jarPath;
+
     private $javaPath;
+
     private $charset;
+
     private $mhtml; // Enable MHTML mode.
+
     private $mhtmlRoot; // Use <root> as the MHTML root for the file.
+
     private $root; // Prepends <root> to all relative URLs.
+
     private $skipMissing; // Don't throw an error for missing image files.
+
     private $maxUriLength; // Maximum length for a data URI. Defaults to 32768.
+
     private $maxImageSize; // Maximum image size (in bytes) to convert.
 
     public function __construct($jarPath, $javaPath = '/usr/bin/java')
     {
-        $this->jarPath = $jarPath;
+        $this->jarPath  = $jarPath;
         $this->javaPath = $javaPath;
     }
 
@@ -81,11 +90,11 @@ class CssEmbedFilter extends BaseProcessFilter implements DependencyExtractorInt
 
     public function filterDump(AssetInterface $asset)
     {
-        $pb = $this->createProcessBuilder(array(
+        $pb = $this->createProcessBuilder([
             $this->javaPath,
             '-jar',
             $this->jarPath,
-        ));
+        ]);
 
         if (null !== $this->charset) {
             $pb->add('--charset')->add($this->charset);
@@ -122,11 +131,11 @@ class CssEmbedFilter extends BaseProcessFilter implements DependencyExtractorInt
 
         // input
         $pb->add($input = FilesystemUtils::createTemporaryFile('cssembed'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
@@ -138,6 +147,6 @@ class CssEmbedFilter extends BaseProcessFilter implements DependencyExtractorInt
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
         // todo
-        return array();
+        return [];
     }
 }

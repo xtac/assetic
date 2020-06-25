@@ -24,12 +24,19 @@ use Assetic\Filter\FilterInterface;
 class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
 {
     private $assets;
+
     private $filters;
+
     private $sourceRoot;
+
     private $targetPath;
+
     private $content;
+
     private $clones;
+
     private $vars;
+
     private $values;
 
     /**
@@ -40,24 +47,24 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
      * @param string $sourceRoot The root directory
      * @param array  $vars
      */
-    public function __construct($assets = array(), $filters = array(), $sourceRoot = null, array $vars = array())
+    public function __construct($assets = [], $filters = [], $sourceRoot = null, array $vars = [])
     {
-        $this->assets = array();
+        $this->assets = [];
         foreach ($assets as $asset) {
             $this->add($asset);
         }
 
-        $this->filters = new FilterCollection($filters);
+        $this->filters    = new FilterCollection($filters);
         $this->sourceRoot = $sourceRoot;
-        $this->clones = new \SplObjectStorage();
-        $this->vars = $vars;
-        $this->values = array();
+        $this->clones     = new \SplObjectStorage();
+        $this->vars       = $vars;
+        $this->values     = [];
     }
 
     public function __clone()
     {
         $this->filters = clone $this->filters;
-        $this->clones = new \SplObjectStorage();
+        $this->clones  = new \SplObjectStorage();
     }
 
     public function all()
@@ -74,7 +81,7 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     {
         foreach ($this->assets as $i => $asset) {
             $clone = isset($this->clones[$asset]) ? $this->clones[$asset] : null;
-            if (in_array($needle, array($asset, $clone), true)) {
+            if (\in_array($needle, [$asset, $clone], true)) {
                 unset($this->clones[$asset], $this->assets[$i]);
 
                 return true;
@@ -96,7 +103,7 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     {
         foreach ($this->assets as $i => $asset) {
             $clone = isset($this->clones[$asset]) ? $this->clones[$asset] : null;
-            if (in_array($needle, array($asset, $clone), true)) {
+            if (\in_array($needle, [$asset, $clone], true)) {
                 unset($this->clones[$asset]);
                 $this->assets[$i] = $replacement;
 
@@ -134,24 +141,24 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     public function load(FilterInterface $additionalFilter = null)
     {
         // loop through leaves and load each asset
-        $parts = array();
+        $parts = [];
         foreach ($this as $asset) {
             $asset->load($additionalFilter);
             $parts[] = $asset->getContent();
         }
 
-        $this->content = implode("\n", $parts);
+        $this->content = \implode("\n", $parts);
     }
 
     public function dump(FilterInterface $additionalFilter = null)
     {
         // loop through leaves and dump each asset
-        $parts = array();
+        $parts = [];
         foreach ($this as $asset) {
             $parts[] = $asset->dump($additionalFilter);
         }
 
-        return implode("\n", $parts);
+        return \implode("\n", $parts);
     }
 
     public function getContent()
@@ -190,11 +197,11 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     /**
      * Returns the highest last-modified value of all assets in the current collection.
      *
-     * @return integer|null A UNIX timestamp
+     * @return null|int A UNIX timestamp
      */
     public function getLastModified()
     {
-        if (!count($this->assets)) {
+        if (!\count($this->assets)) {
             return;
         }
 
@@ -227,7 +234,7 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
         $this->values = $values;
 
         foreach ($this as $asset) {
-            $asset->setValues(array_intersect_key($values, array_flip($asset->getVars())));
+            $asset->setValues(\array_intersect_key($values, \array_flip($asset->getVars())));
         }
     }
 

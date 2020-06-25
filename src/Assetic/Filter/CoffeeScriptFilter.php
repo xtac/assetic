@@ -18,22 +18,25 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Compiles CoffeeScript into Javascript.
  *
- * @link http://coffeescript.org/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://coffeescript.org/
  */
 class CoffeeScriptFilter extends BaseNodeFilter
 {
     private $coffeeBin;
+
     private $nodeBin;
 
     // coffee options
     private $bare;
+
     private $noHeader;
 
     public function __construct($coffeeBin = '/usr/bin/coffee', $nodeBin = null)
     {
         $this->coffeeBin = $coffeeBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin   = $nodeBin;
     }
 
     public function setBare($bare)
@@ -49,11 +52,11 @@ class CoffeeScriptFilter extends BaseNodeFilter
     public function filterLoad(AssetInterface $asset)
     {
         $input = FilesystemUtils::createTemporaryFile('coffee');
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $pb = $this->createProcessBuilder($this->nodeBin
-            ? array($this->nodeBin, $this->coffeeBin)
-            : array($this->coffeeBin));
+            ? [$this->nodeBin, $this->coffeeBin]
+            : [$this->coffeeBin]);
 
         $pb->add('-cp');
 
@@ -68,7 +71,7 @@ class CoffeeScriptFilter extends BaseNodeFilter
         $pb->add($input);
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());

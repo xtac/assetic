@@ -16,18 +16,20 @@ use Assetic\Asset\AssetInterface;
 /**
  * Filters assets through CssMin.
  *
- * @link http://code.google.com/p/cssmin
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://code.google.com/p/cssmin
  */
 class CssMinFilter implements FilterInterface
 {
     private $filters;
+
     private $plugins;
 
     public function __construct()
     {
-        $this->filters = array();
-        $this->plugins = array();
+        $this->filters = [];
+        $this->plugins = [];
     }
 
     public function setFilters(array $filters)
@@ -61,7 +63,7 @@ class CssMinFilter implements FilterInterface
 
         if (isset($filters['ImportImports']) && true === $filters['ImportImports']) {
             if ($dir = $asset->getSourceDirectory()) {
-                $filters['ImportImports'] = array('BasePath' => $dir);
+                $filters['ImportImports'] = ['BasePath' => $dir];
             } else {
                 unset($filters['ImportImports']);
             }

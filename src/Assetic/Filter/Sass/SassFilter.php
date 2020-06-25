@@ -18,8 +18,9 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Loads SASS files.
  *
- * @link http://sass-lang.com/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://sass-lang.com/
  */
 class SassFilter extends BaseSassFilter
 {
@@ -29,23 +30,35 @@ class SassFilter extends BaseSassFilter
     const STYLE_COMPRESSED = 'compressed';
 
     private $sassPath;
+
     private $rubyPath;
+
     private $unixNewlines;
+
     private $scss;
+
     private $style;
+
     private $precision;
+
     private $quiet;
+
     private $debugInfo;
+
     private $lineNumbers;
+
     private $sourceMap;
+
     private $cacheLocation;
+
     private $noCache;
+
     private $compass;
 
     public function __construct($sassPath = '/usr/bin/sass', $rubyPath = null)
     {
-        $this->sassPath = $sassPath;
-        $this->rubyPath = $rubyPath;
+        $this->sassPath      = $sassPath;
+        $this->rubyPath      = $rubyPath;
         $this->cacheLocation = FilesystemUtils::getTemporaryDirectory();
     }
 
@@ -106,9 +119,9 @@ class SassFilter extends BaseSassFilter
 
     public function filterLoad(AssetInterface $asset)
     {
-        $sassProcessArgs = array($this->sassPath);
+        $sassProcessArgs = [$this->sassPath];
         if (null !== $this->rubyPath) {
-            $sassProcessArgs = array_merge(explode(' ', $this->rubyPath), $sassProcessArgs);
+            $sassProcessArgs = \array_merge(\explode(' ', $this->rubyPath), $sassProcessArgs);
         }
 
         $pb = $this->createProcessBuilder($sassProcessArgs);
@@ -121,7 +134,7 @@ class SassFilter extends BaseSassFilter
             $pb->add('--unix-newlines');
         }
 
-        if (true === $this->scss || (null === $this->scss && 'scss' == pathinfo($asset->getSourcePath(), PATHINFO_EXTENSION))) {
+        if (true === $this->scss || (null === $this->scss && 'scss' == \pathinfo($asset->getSourcePath(), PATHINFO_EXTENSION))) {
             $pb->add('--scss');
         }
 
@@ -167,11 +180,11 @@ class SassFilter extends BaseSassFilter
 
         // input
         $pb->add($input = FilesystemUtils::createTemporaryFile('sass'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());

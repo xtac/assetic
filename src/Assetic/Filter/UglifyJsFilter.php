@@ -18,18 +18,24 @@ use Assetic\Util\FilesystemUtils;
 /**
  * UglifyJs filter.
  *
- * @link https://github.com/mishoo/UglifyJS
  * @author André Roaldseth <andre@roaldseth.net>
+ *
+ * @see https://github.com/mishoo/UglifyJS
  */
 class UglifyJsFilter extends BaseNodeFilter
 {
     private $uglifyjsBin;
+
     private $nodeBin;
 
     private $noCopyright;
+
     private $beautify;
+
     private $unsafe;
+
     private $mangle;
+
     private $defines;
 
     /**
@@ -39,11 +45,12 @@ class UglifyJsFilter extends BaseNodeFilter
     public function __construct($uglifyjsBin = '/usr/bin/uglifyjs', $nodeBin = null)
     {
         $this->uglifyjsBin = $uglifyjsBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin     = $nodeBin;
     }
 
     /**
      * Removes the first block of comments as well
+     *
      * @param bool $noCopyright True to enable
      */
     public function setNoCopyright($noCopyright)
@@ -53,6 +60,7 @@ class UglifyJsFilter extends BaseNodeFilter
 
     /**
      * Output indented code
+     *
      * @param bool $beautify True to enable
      */
     public function setBeautify($beautify)
@@ -62,6 +70,7 @@ class UglifyJsFilter extends BaseNodeFilter
 
     /**
      * Enable additional optimizations that are known to be unsafe in some situations.
+     *
      * @param bool $unsafe True to enable
      */
     public function setUnsafe($unsafe)
@@ -71,6 +80,7 @@ class UglifyJsFilter extends BaseNodeFilter
 
     /**
      * Safely mangle variable and function names for greater file compress.
+     *
      * @param bool $mangle True to enable
      */
     public function setMangle($mangle)
@@ -85,6 +95,8 @@ class UglifyJsFilter extends BaseNodeFilter
 
     /**
      * @see Assetic\Filter\FilterInterface::filterLoad()
+     *
+     * @param AssetInterface $asset
      */
     public function filterLoad(AssetInterface $asset)
     {
@@ -94,13 +106,15 @@ class UglifyJsFilter extends BaseNodeFilter
      * Run the asset through UglifyJs
      *
      * @see Assetic\Filter\FilterInterface::filterDump()
+     *
+     * @param AssetInterface $asset
      */
     public function filterDump(AssetInterface $asset)
     {
         $pb = $this->createProcessBuilder(
             $this->nodeBin
-            ? array($this->nodeBin, $this->uglifyjsBin)
-            : array($this->uglifyjsBin)
+            ? [$this->nodeBin, $this->uglifyjsBin]
+            : [$this->uglifyjsBin]
         );
 
         if ($this->noCopyright) {
@@ -129,16 +143,16 @@ class UglifyJsFilter extends BaseNodeFilter
         $input  = FilesystemUtils::createTemporaryFile('uglifyjs_in');
         $output = FilesystemUtils::createTemporaryFile('uglifyjs_out');
 
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
         $pb->add('-o')->add($output)->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
-            if (file_exists($output)) {
-                unlink($output);
+            if (\file_exists($output)) {
+                \unlink($output);
             }
 
             if (127 === $code) {
@@ -148,12 +162,12 @@ class UglifyJsFilter extends BaseNodeFilter
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        if (!file_exists($output)) {
+        if (!\file_exists($output)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $uglifiedJs = file_get_contents($output);
-        unlink($output);
+        $uglifiedJs = \file_get_contents($output);
+        \unlink($output);
 
         $asset->setContent($uglifiedJs);
     }

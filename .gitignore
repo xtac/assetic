@@ -5,3 +5,7 @@ phpunit.xml
 vendor/
 node_modules/
 Gemfile.lock
+
+### PhpStorm ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
+.idea/

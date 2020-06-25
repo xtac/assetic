@@ -18,9 +18,10 @@ use Assetic\Asset\AssetInterface;
  *
  * All credit for the filter itself is mentioned in the file itself.
  *
- * @link https://raw.githubusercontent.com/mrclay/minify/master/min/lib/Minify/CSS/Compressor.php
  * @author Stephen Clay <steve@mrclay.org>
  * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
+ *
+ * @see https://raw.githubusercontent.com/mrclay/minify/master/min/lib/Minify/CSS/Compressor.php
  */
 class MinifyCssCompressorFilter implements FilterInterface
 {

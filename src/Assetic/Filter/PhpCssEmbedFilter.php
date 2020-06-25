@@ -19,11 +19,12 @@ use CssEmbed\CssEmbed;
  * A filter that embed url directly into css
  *
  * @author Pierre Tachoire <pierre.tachoire@gmail.com>
- * @link https://github.com/krichprollsch/phpCssEmbed
+ *
+ * @see https://github.com/krichprollsch/phpCssEmbed
  */
 class PhpCssEmbedFilter implements DependencyExtractorInterface
 {
-    private $presets = array();
+    private $presets = [];
 
     public function setPresets(array $presets)
     {
@@ -47,6 +48,6 @@ class PhpCssEmbedFilter implements DependencyExtractorInterface
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
         // todo
-        return array();
+        return [];
     }
 }

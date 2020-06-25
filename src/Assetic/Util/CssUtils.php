@@ -53,8 +53,8 @@ abstract class CssUtils
     {
         $pattern = static::REGEX_URLS;
 
-        return static::filterCommentless($content, function ($part) use (& $callback, $pattern) {
-            return preg_replace_callback($pattern, $callback, $part);
+        return static::filterCommentless($content, function ($part) use (&$callback, $pattern) {
+            return \preg_replace_callback($pattern, $callback, $part);
         });
     }
 
@@ -63,7 +63,7 @@ abstract class CssUtils
      *
      * @param string   $content    The CSS
      * @param callable $callback   A PHP callable
-     * @param Boolean  $includeUrl Whether to include url() in the pattern
+     * @param bool     $includeUrl Whether to include url() in the pattern
      *
      * @return string The filtered CSS
      */
@@ -71,8 +71,8 @@ abstract class CssUtils
     {
         $pattern = $includeUrl ? static::REGEX_IMPORTS : static::REGEX_IMPORTS_NO_URLS;
 
-        return static::filterCommentless($content, function ($part) use (& $callback, $pattern) {
-            return preg_replace_callback($pattern, $callback, $part);
+        return static::filterCommentless($content, function ($part) use (&$callback, $pattern) {
+            return \preg_replace_callback($pattern, $callback, $part);
         });
     }
 
@@ -88,8 +88,8 @@ abstract class CssUtils
     {
         $pattern = static::REGEX_IE_FILTERS;
 
-        return static::filterCommentless($content, function ($part) use (& $callback, $pattern) {
-            return preg_replace_callback($pattern, $callback, $part);
+        return static::filterCommentless($content, function ($part) use (&$callback, $pattern) {
+            return \preg_replace_callback($pattern, $callback, $part);
         });
     }
 
@@ -104,9 +104,9 @@ abstract class CssUtils
     public static function filterCommentless($content, $callback)
     {
         $result = '';
-        foreach (preg_split(static::REGEX_COMMENTS, $content, -1, PREG_SPLIT_DELIM_CAPTURE) as $part) {
-            if (!preg_match(static::REGEX_COMMENTS, $part, $match) || $part != $match[0]) {
-                $part = call_user_func($callback, $part);
+        foreach (\preg_split(static::REGEX_COMMENTS, $content, -1, PREG_SPLIT_DELIM_CAPTURE) as $part) {
+            if (!\preg_match(static::REGEX_COMMENTS, $part, $match) || $part != $match[0]) {
+                $part = \call_user_func($callback, $part);
             }
 
             $result .= $part;
@@ -124,12 +124,12 @@ abstract class CssUtils
      */
     public static function extractImports($content)
     {
-        $imports = array();
+        $imports = [];
         static::filterImports($content, function ($matches) use (&$imports) {
             $imports[] = $matches['url'];
         });
 
-        return array_unique(array_filter($imports));
+        return \array_unique(\array_filter($imports));
     }
 
     final private function __construct()

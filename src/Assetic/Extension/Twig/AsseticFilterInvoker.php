@@ -19,19 +19,21 @@ namespace Assetic\Extension\Twig;
 class AsseticFilterInvoker
 {
     private $factory;
+
     private $filters;
+
     private $options;
 
     public function __construct($factory, $filter)
     {
         $this->factory = $factory;
 
-        if (is_array($filter) && isset($filter['filter'])) {
+        if (\is_array($filter) && isset($filter['filter'])) {
             $this->filters = (array) $filter['filter'];
-            $this->options = isset($filter['options']) ? (array) $filter['options'] : array();
+            $this->options = isset($filter['options']) ? (array) $filter['options'] : [];
         } else {
             $this->filters = (array) $filter;
-            $this->options = array();
+            $this->options = [];
         }
     }
 
@@ -50,7 +52,7 @@ class AsseticFilterInvoker
         return $this->options;
     }
 
-    public function invoke($input, array $options = array())
+    public function invoke($input, array $options = [])
     {
         $asset = $this->factory->createAsset($input, $this->filters, $options + $this->options);
 

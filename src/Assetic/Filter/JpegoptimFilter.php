@@ -18,13 +18,16 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Runs assets through Jpegoptim.
  *
- * @link   http://www.kokkonen.net/tjko/projects.html
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see   http://www.kokkonen.net/tjko/projects.html
  */
 class JpegoptimFilter extends BaseProcessFilter
 {
     private $jpegoptimBin;
+
     private $stripAll;
+
     private $max;
 
     /**
@@ -53,29 +56,30 @@ class JpegoptimFilter extends BaseProcessFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $pb = $this->createProcessBuilder(array($this->jpegoptimBin));
+        $pb = $this->createProcessBuilder([$this->jpegoptimBin]);
 
         if ($this->stripAll) {
             $pb->add('--strip-all');
         }
 
         if ($this->max) {
-            $pb->add('--max='.$this->max);
+            $pb->add('--max=' . $this->max);
         }
 
         $pb->add($input = FilesystemUtils::createTemporaryFile('jpegoptim'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $proc->run();
 
-        if (false !== strpos($proc->getOutput(), 'ERROR')) {
-            unlink($input);
+        if (false !== \strpos($proc->getOutput(), 'ERROR')) {
+            \unlink($input);
+
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        $asset->setContent(file_get_contents($input));
+        $asset->setContent(\file_get_contents($input));
 
-        unlink($input);
+        \unlink($input);
     }
 }

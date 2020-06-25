@@ -27,7 +27,7 @@ interface WorkerInterface
      * @param AssetInterface $asset   An asset
      * @param AssetFactory   $factory The factory
      *
-     * @return AssetInterface|null May optionally return a replacement asset
+     * @return null|AssetInterface May optionally return a replacement asset
      */
     public function process(AssetInterface $asset, AssetFactory $factory);
 }

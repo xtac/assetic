@@ -10,7 +10,7 @@ use Assetic\Util\SassUtils;
 
 abstract class BaseSassFilter extends BaseProcessFilter implements DependencyExtractorInterface
 {
-    protected $loadPaths = array();
+    protected $loadPaths = [];
 
     public function setLoadPaths(array $loadPaths)
     {
@@ -26,42 +26,42 @@ abstract class BaseSassFilter extends BaseProcessFilter implements DependencyExt
     {
         $loadPaths = $this->loadPaths;
         if ($loadPath) {
-            array_unshift($loadPaths, $loadPath);
+            \array_unshift($loadPaths, $loadPath);
         }
 
         if (!$loadPaths) {
-            return array();
+            return [];
         }
 
-        $children = array();
+        $children = [];
         foreach (SassUtils::extractImports($content) as $reference) {
-            if ('.css' === substr($reference, -4)) {
+            if ('.css' === \substr($reference, -4)) {
                 // skip normal css imports
                 // todo: skip imports with media queries
                 continue;
             }
 
             // the reference may or may not have an extension or be a partial
-            if (pathinfo($reference, PATHINFO_EXTENSION)) {
-                $needles = array(
+            if (\pathinfo($reference, PATHINFO_EXTENSION)) {
+                $needles = [
                     $reference,
                     self::partialize($reference),
-                );
+                ];
             } else {
-                $needles = array(
-                    $reference.'.scss',
-                    $reference.'.sass',
-                    self::partialize($reference).'.scss',
-                    self::partialize($reference).'.sass',
-                );
+                $needles = [
+                    $reference . '.scss',
+                    $reference . '.sass',
+                    self::partialize($reference) . '.scss',
+                    self::partialize($reference) . '.sass',
+                ];
             }
 
             foreach ($loadPaths as $loadPath) {
                 foreach ($needles as $needle) {
-                    if (file_exists($file = $loadPath.'/'.$needle)) {
-                        $coll = $factory->createAsset($file, array(), array('root' => $loadPath));
+                    if (\file_exists($file = $loadPath . '/' . $needle)) {
+                        $coll = $factory->createAsset($file, [], ['root' => $loadPath]);
                         foreach ($coll as $leaf) {
-                            /** @var $leaf AssetInterface */
+                            /** @var AssetInterface $leaf */
                             $leaf->ensureFilter($this);
                             $children[] = $leaf;
                             goto next_reference;
@@ -78,16 +78,16 @@ abstract class BaseSassFilter extends BaseProcessFilter implements DependencyExt
 
     private static function partialize($reference)
     {
-        $parts = pathinfo($reference);
+        $parts = \pathinfo($reference);
 
         if ('.' === $parts['dirname']) {
-            $partial = '_'.$parts['filename'];
+            $partial = '_' . $parts['filename'];
         } else {
-            $partial = $parts['dirname'].DIRECTORY_SEPARATOR.'_'.$parts['filename'];
+            $partial = $parts['dirname'] . DIRECTORY_SEPARATOR . '_' . $parts['filename'];
         }
 
         if (isset($parts['extension'])) {
-            $partial .= '.'.$parts['extension'];
+            $partial .= '.' . $parts['extension'];
         }
 
         return $partial;

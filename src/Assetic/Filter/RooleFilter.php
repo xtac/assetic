@@ -19,12 +19,14 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Loads Roole files.
  *
- * @link http://roole.org
  * @author Marcin Chwedziak <tiraeth@gmail.com>
+ *
+ * @see http://roole.org
  */
 class RooleFilter extends BaseNodeFilter implements DependencyExtractorInterface
 {
     private $rooleBin;
+
     private $nodeBin;
 
     /**
@@ -36,40 +38,40 @@ class RooleFilter extends BaseNodeFilter implements DependencyExtractorInterface
     public function __construct($rooleBin = '/usr/bin/roole', $nodeBin = null)
     {
         $this->rooleBin = $rooleBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin  = $nodeBin;
     }
 
     public function filterLoad(AssetInterface $asset)
     {
-        $input = FilesystemUtils::createTemporaryFile('roole');
-        $output = $input.'.css';
+        $input  = FilesystemUtils::createTemporaryFile('roole');
+        $output = $input . '.css';
 
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $pb = $this->createProcessBuilder($this->nodeBin
-            ? array($this->nodeBin, $this->rooleBin)
-            : array($this->rooleBin));
+            ? [$this->nodeBin, $this->rooleBin]
+            : [$this->rooleBin]);
 
         $pb->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
-            if (file_exists($output)) {
-                unlink($output);
+            if (\file_exists($output)) {
+                \unlink($output);
             }
 
             throw FilterException::fromProcess($proc);
         }
 
-        if (!file_exists($output)) {
+        if (!\file_exists($output)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $asset->setContent(file_get_contents($output));
-        unlink($output);
+        $asset->setContent(\file_get_contents($output));
+        \unlink($output);
     }
 
     public function filterDump(AssetInterface $asset)
@@ -79,6 +81,6 @@ class RooleFilter extends BaseNodeFilter implements DependencyExtractorInterface
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
         // todo
-        return array();
+        return [];
     }
 }

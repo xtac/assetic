@@ -20,63 +20,66 @@ use Assetic\Util\FilesystemUtils;
  * requires that the npm package ember-precompile be installed. You can find this
  * package at https://github.com/gabrielgrant/node-ember-precompile.
  *
- * @link http://www.emberjs.com/
  * @author Jarrod Nettles <jarrod.nettles@icloud.com>
+ *
+ * @see http://www.emberjs.com/
  */
 class EmberPrecompileFilter extends BaseNodeFilter
 {
     private $emberBin;
+
     private $nodeBin;
 
     public function __construct($handlebarsBin = '/usr/bin/ember-precompile', $nodeBin = null)
     {
         $this->emberBin = $handlebarsBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin  = $nodeBin;
     }
 
     public function filterLoad(AssetInterface $asset)
     {
         $pb = $this->createProcessBuilder($this->nodeBin
-            ? array($this->nodeBin, $this->emberBin)
-            : array($this->emberBin));
+            ? [$this->nodeBin, $this->emberBin]
+            : [$this->emberBin]);
 
         if ($sourcePath = $asset->getSourcePath()) {
-            $templateName = basename($sourcePath);
+            $templateName = \basename($sourcePath);
         } else {
             throw new \LogicException('The embed-precompile filter requires that assets have a source path set');
         }
 
         $inputDirPath = FilesystemUtils::createThrowAwayDirectory('ember_in');
-        $inputPath = $inputDirPath.DIRECTORY_SEPARATOR.$templateName;
-        $outputPath = FilesystemUtils::createTemporaryFile('ember_out');
+        $inputPath    = $inputDirPath . DIRECTORY_SEPARATOR . $templateName;
+        $outputPath   = FilesystemUtils::createTemporaryFile('ember_out');
 
-        file_put_contents($inputPath, $asset->getContent());
+        \file_put_contents($inputPath, $asset->getContent());
 
         $pb->add($inputPath)->add('-f')->add($outputPath);
 
-        $process = $pb->getProcess();
+        $process    = $pb->getProcess();
         $returnCode = $process->run();
 
-        unlink($inputPath);
-        rmdir($inputDirPath);
+        \unlink($inputPath);
+        \rmdir($inputDirPath);
 
         if (127 === $returnCode) {
             throw new \RuntimeException('Path to node executable could not be resolved.');
         }
 
         if (0 !== $returnCode) {
-            if (file_exists($outputPath)) {
-                unlink($outputPath);
+            if (\file_exists($outputPath)) {
+                \unlink($outputPath);
             }
+
             throw FilterException::fromProcess($process)->setInput($asset->getContent());
         }
 
-        if (!file_exists($outputPath)) {
+        if (!\file_exists($outputPath)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $compiledJs = file_get_contents($outputPath);
-        unlink($outputPath);
+        $compiledJs = \file_get_contents($outputPath);
+        \unlink($outputPath);
 
         $asset->setContent($compiledJs);
     }

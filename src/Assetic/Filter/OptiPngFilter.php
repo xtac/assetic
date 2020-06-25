@@ -18,12 +18,14 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Runs assets through OptiPNG.
  *
- * @link   http://optipng.sourceforge.net/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see   http://optipng.sourceforge.net/
  */
 class OptiPngFilter extends BaseProcessFilter
 {
     private $optipngBin;
+
     private $level;
 
     /**
@@ -47,29 +49,30 @@ class OptiPngFilter extends BaseProcessFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $pb = $this->createProcessBuilder(array($this->optipngBin));
+        $pb = $this->createProcessBuilder([$this->optipngBin]);
 
         if (null !== $this->level) {
             $pb->add('-o')->add($this->level);
         }
 
         $pb->add('-out')->add($output = FilesystemUtils::createTemporaryFile('optipng_out'));
-        unlink($output);
+        \unlink($output);
 
         $pb->add($input = FilesystemUtils::createTemporaryFile('optinpg_in'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $proc = $pb->getProcess();
         $code = $proc->run();
 
         if (0 !== $code) {
-            unlink($input);
+            \unlink($input);
+
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        $asset->setContent(file_get_contents($output));
+        $asset->setContent(\file_get_contents($output));
 
-        unlink($input);
-        unlink($output);
+        \unlink($input);
+        \unlink($output);
     }
 }

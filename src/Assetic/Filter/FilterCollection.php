@@ -20,9 +20,9 @@ use Assetic\Asset\AssetInterface;
  */
 class FilterCollection implements FilterInterface, \IteratorAggregate, \Countable
 {
-    private $filters = array();
+    private $filters = [];
 
-    public function __construct($filters = array())
+    public function __construct($filters = [])
     {
         foreach ($filters as $filter) {
             $this->ensure($filter);
@@ -34,6 +34,8 @@ class FilterCollection implements FilterInterface, \IteratorAggregate, \Countabl
      *
      * If the supplied filter is another filter collection, each of its
      * filters will be checked.
+     *
+     * @param FilterInterface $filter
      */
     public function ensure(FilterInterface $filter)
     {
@@ -41,7 +43,7 @@ class FilterCollection implements FilterInterface, \IteratorAggregate, \Countabl
             foreach ($filter as $f) {
                 $this->ensure($f);
             }
-        } elseif (!in_array($filter, $this->filters, true)) {
+        } elseif (!\in_array($filter, $this->filters, true)) {
             $this->filters[] = $filter;
         }
     }
@@ -53,7 +55,7 @@ class FilterCollection implements FilterInterface, \IteratorAggregate, \Countabl
 
     public function clear()
     {
-        $this->filters = array();
+        $this->filters = [];
     }
 
     public function filterLoad(AssetInterface $asset)
@@ -77,6 +79,6 @@ class FilterCollection implements FilterInterface, \IteratorAggregate, \Countabl
 
     public function count()
     {
-        return count($this->filters);
+        return \count($this->filters);
     }
 }

@@ -12,7 +12,7 @@
 use Assetic\Factory\AssetFactory;
 use Assetic\Util\TraversableString;
 
-if (function_exists('assetic_init')) {
+if (\function_exists('assetic_init')) {
     return;
 }
 
@@ -25,7 +25,7 @@ function assetic_init(AssetFactory $factory)
 {
     global $_assetic;
 
-    $_assetic = new stdClass();
+    $_assetic          = new stdClass();
     $_assetic->factory = $factory;
 }
 
@@ -38,7 +38,7 @@ function assetic_init(AssetFactory $factory)
  *
  * @return array An array of javascript URLs
  */
-function assetic_javascripts($inputs = array(), $filters = array(), array $options = array())
+function assetic_javascripts($inputs = [], $filters = [], array $options = [])
 {
     if (!isset($options['output'])) {
         $options['output'] = 'js/*.js';
@@ -56,7 +56,7 @@ function assetic_javascripts($inputs = array(), $filters = array(), array $optio
  *
  * @return array An array of stylesheet URLs
  */
-function assetic_stylesheets($inputs = array(), $filters = array(), array $options = array())
+function assetic_stylesheets($inputs = [], $filters = [], array $options = [])
 {
     if (!isset($options['output'])) {
         $options['output'] = 'css/*.css';
@@ -74,7 +74,7 @@ function assetic_stylesheets($inputs = array(), $filters = array(), array $optio
  *
  * @return string An image URL
  */
-function assetic_image($input, $filters = array(), array $options = array())
+function assetic_image($input, $filters = [], array $options = [])
 {
     if (!isset($options['output'])) {
         $options['output'] = 'images/*';
@@ -82,7 +82,7 @@ function assetic_image($input, $filters = array(), array $options = array())
 
     $urls = _assetic_urls($input, $filters, $options);
 
-    return current($urls);
+    return \current($urls);
 }
 
 /**
@@ -94,28 +94,28 @@ function assetic_image($input, $filters = array(), array $options = array())
  *
  * @return array An array of URLs
  */
-function _assetic_urls($inputs = array(), $filters = array(), array $options = array())
+function _assetic_urls($inputs = [], $filters = [], array $options = [])
 {
     global $_assetic;
 
-    if (!is_array($inputs)) {
-        $inputs = array_filter(array_map('trim', explode(',', $inputs)));
+    if (!\is_array($inputs)) {
+        $inputs = \array_filter(\array_map('trim', \explode(',', $inputs)));
     }
 
-    if (!is_array($filters)) {
-        $filters = array_filter(array_map('trim', explode(',', $filters)));
+    if (!\is_array($filters)) {
+        $filters = \array_filter(\array_map('trim', \explode(',', $filters)));
     }
 
     $coll = $_assetic->factory->createAsset($inputs, $filters, $options);
 
-    $debug = isset($options['debug']) ? $options['debug'] : $_assetic->factory->isDebug();
+    $debug   = isset($options['debug']) ? $options['debug'] : $_assetic->factory->isDebug();
     $combine = isset($options['combine']) ? $options['combine'] : !$debug;
 
     $one = $coll->getTargetPath();
     if ($combine) {
-        $many = array($one);
+        $many = [$one];
     } else {
-        $many = array();
+        $many = [];
         foreach ($coll as $leaf) {
             $many[] = $leaf->getTargetPath();
         }

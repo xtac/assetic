@@ -20,7 +20,7 @@ use Assetic\Filter\FilterInterface;
  */
 class FilterManager
 {
-    private $filters = array();
+    private $filters = [];
 
     public function set($alias, FilterInterface $filter)
     {
@@ -32,7 +32,7 @@ class FilterManager
     public function get($alias)
     {
         if (!isset($this->filters[$alias])) {
-            throw new \InvalidArgumentException(sprintf('There is no "%s" filter.', $alias));
+            throw new \InvalidArgumentException(\sprintf('There is no "%s" filter.', $alias));
         }
 
         return $this->filters[$alias];
@@ -45,7 +45,7 @@ class FilterManager
 
     public function getNames()
     {
-        return array_keys($this->filters);
+        return \array_keys($this->filters);
     }
 
     /**
@@ -57,8 +57,8 @@ class FilterManager
      */
     protected function checkName($name)
     {
-        if (!ctype_alnum(str_replace('_', '', $name))) {
-            throw new \InvalidArgumentException(sprintf('The name "%s" is invalid.', $name));
+        if (!\ctype_alnum(\str_replace('_', '', $name))) {
+            throw new \InvalidArgumentException(\sprintf('The name "%s" is invalid.', $name));
         }
     }
 }

@@ -18,8 +18,9 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Parses CSS and adds vendor prefixes to rules using values from the Can I Use website
  *
- * @link https://github.com/ai/autoprefixer
  * @author Alex Vasilenko <aa.vasilenko@gmail.com>
+ *
+ * @see https://github.com/ai/autoprefixer
  */
 class AutoprefixerFilter extends BaseNodeFilter
 {
@@ -31,7 +32,7 @@ class AutoprefixerFilter extends BaseNodeFilter
     /**
      * @var array
      */
-    private $browsers = array();
+    private $browsers = [];
 
     public function __construct($autoprefixerBin)
     {
@@ -57,11 +58,11 @@ class AutoprefixerFilter extends BaseNodeFilter
     public function filterLoad(AssetInterface $asset)
     {
         $input = $asset->getContent();
-        $pb = $this->createProcessBuilder(array($this->autoprefixerBin));
+        $pb    = $this->createProcessBuilder([$this->autoprefixerBin]);
 
         $pb->setInput($input);
         if ($this->browsers) {
-            $pb->add('-b')->add(implode(',', $this->browsers));
+            $pb->add('-b')->add(\implode(',', $this->browsers));
         }
 
         $output = FilesystemUtils::createTemporaryFile('autoprefixer');
@@ -72,8 +73,8 @@ class AutoprefixerFilter extends BaseNodeFilter
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        $asset->setContent(file_get_contents($output));
-        unlink($output);
+        $asset->setContent(\file_get_contents($output));
+        \unlink($output);
     }
 
     /**

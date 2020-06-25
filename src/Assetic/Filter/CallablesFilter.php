@@ -22,18 +22,20 @@ use Assetic\Factory\AssetFactory;
 class CallablesFilter implements FilterInterface, DependencyExtractorInterface
 {
     private $loader;
+
     private $dumper;
+
     private $extractor;
 
     /**
-     * @param callable|null $loader
-     * @param callable|null $dumper
-     * @param callable|null $extractor
+     * @param null|callable $loader
+     * @param null|callable $dumper
+     * @param null|callable $extractor
      */
     public function __construct($loader = null, $dumper = null, $extractor = null)
     {
-        $this->loader = $loader;
-        $this->dumper = $dumper;
+        $this->loader    = $loader;
+        $this->dumper    = $dumper;
         $this->extractor = $extractor;
     }
 
@@ -57,6 +59,6 @@ class CallablesFilter implements FilterInterface, DependencyExtractorInterface
             return $callable($factory, $content, $loadPath);
         }
 
-        return array();
+        return [];
     }
 }

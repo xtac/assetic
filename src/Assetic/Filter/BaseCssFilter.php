@@ -22,6 +22,11 @@ abstract class BaseCssFilter implements FilterInterface
 {
     /**
      * @see CssUtils::filterReferences()
+     *
+     * @param mixed $content
+     * @param mixed $callback
+     * @param mixed $limit
+     * @param mixed $count
      */
     protected function filterReferences($content, $callback, $limit = -1, &$count = 0)
     {
@@ -30,6 +35,11 @@ abstract class BaseCssFilter implements FilterInterface
 
     /**
      * @see CssUtils::filterUrls()
+     *
+     * @param mixed $content
+     * @param mixed $callback
+     * @param mixed $limit
+     * @param mixed $count
      */
     protected function filterUrls($content, $callback, $limit = -1, &$count = 0)
     {
@@ -38,6 +48,12 @@ abstract class BaseCssFilter implements FilterInterface
 
     /**
      * @see CssUtils::filterImports()
+     *
+     * @param mixed $content
+     * @param mixed $callback
+     * @param mixed $limit
+     * @param mixed $count
+     * @param mixed $includeUrl
      */
     protected function filterImports($content, $callback, $limit = -1, &$count = 0, $includeUrl = true)
     {
@@ -46,6 +62,11 @@ abstract class BaseCssFilter implements FilterInterface
 
     /**
      * @see CssUtils::filterIEFilters()
+     *
+     * @param mixed $content
+     * @param mixed $callback
+     * @param mixed $limit
+     * @param mixed $count
      */
     protected function filterIEFilters($content, $callback, $limit = -1, &$count = 0)
     {

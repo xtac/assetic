@@ -21,21 +21,25 @@ use Leafo\ScssPhp\Compiler;
  *
  * Scss files are mostly compatible, but there are slight differences.
  *
- * @link http://leafo.net/scssphp/
- *
  * @author Bart van den Burg <bart@samson-it.nl>
+ *
+ * @see http://leafo.net/scssphp/
  */
 class ScssphpFilter implements DependencyExtractorInterface
 {
     private $compass = false;
-    private $importPaths = array();
-    private $customFunctions = array();
+
+    private $importPaths = [];
+
+    private $customFunctions = [];
+
     private $formatter;
-    private $variables = array();
+
+    private $variables = [];
 
     public function enableCompass($enable = true)
     {
-        $this->compass = (Boolean) $enable;
+        $this->compass = (bool) $enable;
     }
 
     public function isCompassEnabled()
@@ -45,15 +49,15 @@ class ScssphpFilter implements DependencyExtractorInterface
 
     public function setFormatter($formatter)
     {
-        $legacyFormatters = array(
-            'scss_formatter' => 'Leafo\ScssPhp\Formatter\Expanded',
-            'scss_formatter_nested' => 'Leafo\ScssPhp\Formatter\Nested',
+        $legacyFormatters = [
+            'scss_formatter'            => 'Leafo\ScssPhp\Formatter\Expanded',
+            'scss_formatter_nested'     => 'Leafo\ScssPhp\Formatter\Nested',
             'scss_formatter_compressed' => 'Leafo\ScssPhp\Formatter\Compressed',
-            'scss_formatter_crunched' => 'Leafo\ScssPhp\Formatter\Crunched',
-        );
+            'scss_formatter_crunched'   => 'Leafo\ScssPhp\Formatter\Crunched',
+        ];
 
         if (isset($legacyFormatters[$formatter])) {
-            @trigger_error(sprintf('The scssphp formatter `%s` is deprecated. Use `%s` instead.', $formatter, $legacyFormatters[$formatter]), E_USER_DEPRECATED);
+            @\trigger_error(\sprintf('The scssphp formatter `%s` is deprecated. Use `%s` instead.', $formatter, $legacyFormatters[$formatter]), E_USER_DEPRECATED);
 
             $formatter = $legacyFormatters[$formatter];
         }
@@ -124,7 +128,7 @@ class ScssphpFilter implements DependencyExtractorInterface
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
         $sc = new Compiler();
-        if ($loadPath !== null) {
+        if (null !== $loadPath) {
             $sc->addImportPath($loadPath);
         }
 
@@ -132,13 +136,13 @@ class ScssphpFilter implements DependencyExtractorInterface
             $sc->addImportPath($path);
         }
 
-        $children = array();
+        $children = [];
         foreach (CssUtils::extractImports($content) as $match) {
             $file = $sc->findImport($match);
             if ($file) {
-                $children[] = $child = $factory->createAsset($file, array(), array('root' => $loadPath));
+                $children[] = $child = $factory->createAsset($file, [], ['root' => $loadPath]);
                 $child->load();
-                $children = array_merge($children, $this->getChildren($factory, $child->getContent(), $loadPath));
+                $children = \array_merge($children, $this->getChildren($factory, $child->getContent(), $loadPath));
             }
         }
 

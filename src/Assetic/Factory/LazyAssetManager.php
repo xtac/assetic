@@ -24,10 +24,15 @@ use Assetic\Factory\Resource\ResourceInterface;
 class LazyAssetManager extends AssetManager
 {
     private $factory;
+
     private $loaders;
+
     private $resources;
+
     private $formulae;
+
     private $loaded;
+
     private $loading;
 
     /**
@@ -36,14 +41,14 @@ class LazyAssetManager extends AssetManager
      * @param AssetFactory $factory The asset factory
      * @param array        $loaders An array of loaders indexed by alias
      */
-    public function __construct(AssetFactory $factory, $loaders = array())
+    public function __construct(AssetFactory $factory, $loaders = [])
     {
-        $this->factory = $factory;
-        $this->loaders = array();
-        $this->resources = array();
-        $this->formulae = array();
-        $this->loaded = false;
-        $this->loading = false;
+        $this->factory   = $factory;
+        $this->loaders   = [];
+        $this->resources = [];
+        $this->formulae  = [];
+        $this->loaded    = false;
+        $this->loading   = false;
 
         foreach ($loaders as $alias => $loader) {
             $this->setLoader($alias, $loader);
@@ -59,7 +64,7 @@ class LazyAssetManager extends AssetManager
     public function setLoader($alias, FormulaLoaderInterface $loader)
     {
         $this->loaders[$alias] = $loader;
-        $this->loaded = false;
+        $this->loaded          = false;
     }
 
     /**
@@ -71,7 +76,7 @@ class LazyAssetManager extends AssetManager
     public function addResource(ResourceInterface $resource, $loader)
     {
         $this->resources[$loader][] = $resource;
-        $this->loaded = false;
+        $this->loaded               = false;
     }
 
     /**
@@ -81,9 +86,9 @@ class LazyAssetManager extends AssetManager
      */
     public function getResources()
     {
-        $resources = array();
+        $resources = [];
         foreach ($this->resources as $r) {
-            $resources = array_merge($resources, $r);
+            $resources = \array_merge($resources, $r);
         }
 
         return $resources;
@@ -94,7 +99,7 @@ class LazyAssetManager extends AssetManager
      *
      * @param string $name An asset name
      *
-     * @return Boolean If there is a formula
+     * @return bool If there is a formula
      */
     public function hasFormula($name)
     {
@@ -110,9 +115,9 @@ class LazyAssetManager extends AssetManager
      *
      * @param string $name An asset name
      *
-     * @return array The formula
-     *
      * @throws \InvalidArgumentException If there is no formula by that name
+     *
+     * @return array The formula
      */
     public function getFormula($name)
     {
@@ -121,7 +126,7 @@ class LazyAssetManager extends AssetManager
         }
 
         if (!isset($this->formulae[$name])) {
-            throw new \InvalidArgumentException(sprintf('There is no "%s" formula.', $name));
+            throw new \InvalidArgumentException(\sprintf('There is no "%s" formula.', $name));
         }
 
         return $this->formulae[$name];
@@ -149,19 +154,19 @@ class LazyAssetManager extends AssetManager
             return;
         }
 
-        if ($diff = array_diff(array_keys($this->resources), array_keys($this->loaders))) {
-            throw new \LogicException('The following loader(s) are not registered: '.implode(', ', $diff));
+        if ($diff = \array_diff(\array_keys($this->resources), \array_keys($this->loaders))) {
+            throw new \LogicException('The following loader(s) are not registered: ' . \implode(', ', $diff));
         }
 
         $this->loading = true;
 
         foreach ($this->resources as $loader => $resources) {
             foreach ($resources as $resource) {
-                $this->formulae = array_replace($this->formulae, $this->loaders[$loader]->load($resource));
+                $this->formulae = \array_replace($this->formulae, $this->loaders[$loader]->load($resource));
             }
         }
 
-        $this->loaded = true;
+        $this->loaded  = true;
         $this->loading = false;
     }
 
@@ -173,7 +178,7 @@ class LazyAssetManager extends AssetManager
 
         if (!parent::has($name) && isset($this->formulae[$name])) {
             list($inputs, $filters, $options) = $this->formulae[$name];
-            $options['name'] = $name;
+            $options['name']                  = $name;
             parent::set($name, $this->factory->createAsset($inputs, $filters, $options));
         }
 
@@ -195,7 +200,7 @@ class LazyAssetManager extends AssetManager
             $this->load();
         }
 
-        return array_unique(array_merge(parent::getNames(), array_keys($this->formulae)));
+        return \array_unique(\array_merge(parent::getNames(), \array_keys($this->formulae)));
     }
 
     public function isDebug()

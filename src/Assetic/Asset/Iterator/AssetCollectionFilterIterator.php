@@ -22,6 +22,7 @@ namespace Assetic\Asset\Iterator;
 class AssetCollectionFilterIterator extends \RecursiveFilterIterator
 {
     private $visited;
+
     private $sources;
 
     /**
@@ -31,7 +32,7 @@ class AssetCollectionFilterIterator extends \RecursiveFilterIterator
      * @param array                   $visited  An array of visited asset objects
      * @param array                   $sources  An array of visited source strings
      */
-    public function __construct(AssetCollectionIterator $iterator, array $visited = array(), array $sources = array())
+    public function __construct(AssetCollectionIterator $iterator, array $visited = [], array $sources = [])
     {
         parent::__construct($iterator);
 
@@ -45,15 +46,15 @@ class AssetCollectionFilterIterator extends \RecursiveFilterIterator
      * De-duplication is performed based on either strict equality or by
      * matching sources.
      *
-     * @return Boolean Returns true if we have not seen this asset yet
+     * @return bool Returns true if we have not seen this asset yet
      */
     public function accept()
     {
-        $asset = $this->getInnerIterator()->current(true);
+        $asset     = $this->getInnerIterator()->current(true);
         $duplicate = false;
 
         // check strict equality
-        if (in_array($asset, $this->visited, true)) {
+        if (\in_array($asset, $this->visited, true)) {
             $duplicate = true;
         } else {
             $this->visited[] = $asset;
@@ -63,8 +64,8 @@ class AssetCollectionFilterIterator extends \RecursiveFilterIterator
         $sourceRoot = $asset->getSourceRoot();
         $sourcePath = $asset->getSourcePath();
         if ($sourceRoot && $sourcePath) {
-            $source = $sourceRoot.'/'.$sourcePath;
-            if (in_array($source, $this->sources)) {
+            $source = $sourceRoot . '/' . $sourcePath;
+            if (\in_array($source, $this->sources)) {
                 $duplicate = true;
             } else {
                 $this->sources[] = $source;

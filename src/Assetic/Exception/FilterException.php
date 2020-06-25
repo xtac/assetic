@@ -21,20 +21,21 @@ use Symfony\Component\Process\Process;
 class FilterException extends \RuntimeException implements Exception
 {
     private $originalMessage;
+
     private $input;
 
     public static function fromProcess(Process $proc)
     {
-        $message = sprintf("An error occurred while running:\n%s", $proc->getCommandLine());
+        $message = \sprintf("An error occurred while running:\n%s", $proc->getCommandLine());
 
         $errorOutput = $proc->getErrorOutput();
         if (!empty($errorOutput)) {
-            $message .= "\n\nError Output:\n".str_replace("\r", '', $errorOutput);
+            $message .= "\n\nError Output:\n" . \str_replace("\r", '', $errorOutput);
         }
 
         $output = $proc->getOutput();
         if (!empty($output)) {
-            $message .= "\n\nOutput:\n".str_replace("\r", '', $output);
+            $message .= "\n\nOutput:\n" . \str_replace("\r", '', $output);
         }
 
         return new self($message);
@@ -65,7 +66,7 @@ class FilterException extends \RuntimeException implements Exception
         $message = $this->originalMessage;
 
         if (!empty($this->input)) {
-            $message .= "\n\nInput:\n".$this->input;
+            $message .= "\n\nInput:\n" . $this->input;
         }
 
         $this->message = $message;

@@ -19,49 +19,70 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Loads Compass files.
  *
- * @link http://compass-style.org/
  * @author Maxime Thirouin <maxime.thirouin@gmail.com>
+ *
+ * @see http://compass-style.org/
  */
 class CompassFilter extends BaseSassFilter
 {
     private $compassPath;
+
     private $rubyPath;
+
     private $scss;
 
     // sass options
     private $unixNewlines;
+
     private $debugInfo;
+
     private $cacheLocation;
+
     private $noCache;
 
     // compass options
     private $force;
+
     private $style;
+
     private $quiet;
+
     private $boring;
+
     private $noLineComments;
+
     private $imagesDir;
+
     private $javascriptsDir;
+
     private $fontsDir;
+
     private $relativeAssets;
 
     // compass configuration file options
-    private $plugins = array();
+    private $plugins = [];
+
     private $httpPath;
+
     private $httpImagesPath;
+
     private $httpFontsPath;
+
     private $httpGeneratedImagesPath;
+
     private $generatedImagesPath;
+
     private $httpJavascriptsPath;
+
     private $homeEnv = true;
 
     public function __construct($compassPath = '/usr/bin/compass', $rubyPath = null)
     {
-        $this->compassPath = $compassPath;
-        $this->rubyPath = $rubyPath;
+        $this->compassPath   = $compassPath;
+        $this->rubyPath      = $rubyPath;
         $this->cacheLocation = FilesystemUtils::getTemporaryDirectory();
 
-        if ('cli' !== php_sapi_name()) {
+        if ('cli' !== \php_sapi_name()) {
             $this->boring = true;
         }
     }
@@ -193,13 +214,13 @@ class CompassFilter extends BaseSassFilter
 
         $tempDir = $this->cacheLocation ? $this->cacheLocation : FilesystemUtils::getTemporaryDirectory();
 
-        $compassProcessArgs = array(
+        $compassProcessArgs = [
             $this->compassPath,
             'compile',
             $tempDir,
-        );
+        ];
         if (null !== $this->rubyPath) {
-            $compassProcessArgs = array_merge(explode(' ', $this->rubyPath), $compassProcessArgs);
+            $compassProcessArgs = \array_merge(\explode(' ', $this->rubyPath), $compassProcessArgs);
         }
 
         $pb = $this->createProcessBuilder($compassProcessArgs);
@@ -244,7 +265,7 @@ class CompassFilter extends BaseSassFilter
         }
 
         // options in config file
-        $optionsConfig = array();
+        $optionsConfig = [];
 
         if (!empty($loadPaths)) {
             $optionsConfig['additional_import_paths'] = $loadPaths;
@@ -291,21 +312,21 @@ class CompassFilter extends BaseSassFilter
         }
 
         // options in configuration file
-        if (count($optionsConfig)) {
-            $config = array();
+        if (\count($optionsConfig)) {
+            $config = [];
             foreach ($this->plugins as $plugin) {
-                $config[] = sprintf("require '%s'", addcslashes($plugin, '\\'));
+                $config[] = \sprintf("require '%s'", \addcslashes($plugin, '\\'));
             }
             foreach ($optionsConfig as $name => $value) {
-                if (!is_array($value)) {
-                    $config[] = sprintf('%s = "%s"', $name, addcslashes($value, '\\'));
+                if (!\is_array($value)) {
+                    $config[] = \sprintf('%s = "%s"', $name, \addcslashes($value, '\\'));
                 } elseif (!empty($value)) {
-                    $config[] = sprintf('%s = %s', $name, $this->formatArrayToRuby($value));
+                    $config[] = \sprintf('%s = %s', $name, $this->formatArrayToRuby($value));
                 }
             }
 
-            $configFile = tempnam($tempDir, 'assetic_compass');
-            file_put_contents($configFile, implode("\n", $config)."\n");
+            $configFile = \tempnam($tempDir, 'assetic_compass');
+            \file_put_contents($configFile, \implode("\n", $config) . "\n");
             $pb->add('--config')->add($configFile);
         }
 
@@ -316,27 +337,27 @@ class CompassFilter extends BaseSassFilter
             $type = $this->scss ? 'scss' : 'sass';
         } elseif ($path = $asset->getSourcePath()) {
             // FIXME: what if the extension is something else?
-            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $type = \pathinfo($path, PATHINFO_EXTENSION);
         } else {
             $type = 'scss';
         }
 
-        $tempName = tempnam($tempDir, 'assetic_compass');
-        unlink($tempName); // FIXME: don't use tempnam() here
+        $tempName = \tempnam($tempDir, 'assetic_compass');
+        \unlink($tempName); // FIXME: don't use tempnam() here
 
         // input
-        $input = $tempName.'.'.$type;
+        $input = $tempName . '.' . $type;
 
         // work-around for https://github.com/chriseppstein/compass/issues/748
-        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            $input = str_replace('\\', '/', $input);
+        if (\defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $input = \str_replace('\\', '/', $input);
         }
 
         $pb->add($input);
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         // output
-        $output = $tempName.'.css';
+        $output = $tempName . '.css';
 
         if ($this->homeEnv) {
             // it's not really usefull but... https://github.com/chriseppstein/compass/issues/376
@@ -348,20 +369,20 @@ class CompassFilter extends BaseSassFilter
         $code = $proc->run();
 
         if (0 !== $code) {
-            unlink($input);
+            \unlink($input);
             if (isset($configFile)) {
-                unlink($configFile);
+                \unlink($configFile);
             }
 
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        $asset->setContent(file_get_contents($output));
+        $asset->setContent(\file_get_contents($output));
 
-        unlink($input);
-        unlink($output);
+        \unlink($input);
+        \unlink($output);
         if (isset($configFile)) {
-            unlink($configFile);
+            \unlink($configFile);
         }
     }
 
@@ -371,19 +392,19 @@ class CompassFilter extends BaseSassFilter
 
     private function formatArrayToRuby($array)
     {
-        $output = array();
+        $output = [];
 
         // does we have an associative array ?
-        if (count(array_filter(array_keys($array), "is_numeric")) != count($array)) {
+        if (\count(\array_filter(\array_keys($array), 'is_numeric')) != \count($array)) {
             foreach ($array as $name => $value) {
-                $output[] = sprintf('    :%s => "%s"', $name, addcslashes($value, '\\'));
+                $output[] = \sprintf('    :%s => "%s"', $name, \addcslashes($value, '\\'));
             }
-            $output = "{\n".implode(",\n", $output)."\n}";
+            $output = "{\n" . \implode(",\n", $output) . "\n}";
         } else {
             foreach ($array as $name => $value) {
-                $output[] = sprintf('    "%s"', addcslashes($value, '\\'));
+                $output[] = \sprintf('    "%s"', \addcslashes($value, '\\'));
             }
-            $output = "[\n".implode(",\n", $output)."\n]";
+            $output = "[\n" . \implode(",\n", $output) . "\n]";
         }
 
         return $output;

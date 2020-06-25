@@ -18,8 +18,9 @@ use Assetic\Asset\AssetInterface;
  *
  * PHP Version of the Dean Edwards's Packer, ported by Nicolas Martin.
  *
- * @link http://joliclic.free.fr/php/javascript-packer/en/
  * @author Maximilian Walter <github@max-walter.net>
+ *
+ * @see http://joliclic.free.fr/php/javascript-packer/en/
  */
 class PackerFilter implements FilterInterface
 {

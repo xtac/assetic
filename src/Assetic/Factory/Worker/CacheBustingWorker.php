@@ -1,9 +1,8 @@
 <?php
-
-/*
- * This file is part of the Assetic package, an OpenSky project.
+/**
+ * This file is part of the gundolle.com package.
  *
- * (c) 2010-2014 OpenSky Project Inc
+ * (c) Perfect storm dev team <dev_all@perfect-storm.net>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -22,11 +21,26 @@ use Assetic\Factory\AssetFactory;
  */
 class CacheBustingWorker implements WorkerInterface
 {
-    private $separator;
+    /**
+     * @var array
+     */
+    private $hashes = [];
 
-    public function __construct($separator = '-')
+    /**
+     * @var array
+     */
+    private $options;
+
+    public function __construct(array $options = [])
     {
-        $this->separator = $separator;
+        $this->options = \array_replace(
+            [
+                'separator'   => '.',
+                'hash_algo'   => 'sha1',
+                'hash_length' => 12,
+            ],
+            $options
+        );
     }
 
     public function process(AssetInterface $asset, AssetFactory $factory)
@@ -36,35 +50,57 @@ class CacheBustingWorker implements WorkerInterface
             return;
         }
 
-        if (!$search = pathinfo($path, PATHINFO_EXTENSION)) {
+        if (!$search = \pathinfo($path, PATHINFO_EXTENSION)) {
             // nothing to replace
             return;
         }
 
-        $replace = $this->separator.$this->getHash($asset, $factory).'.'.$search;
-        if (preg_match('/'.preg_quote($replace, '/').'$/', $path)) {
+        $replace = $this->options['separator'] . $this->getHash($asset, $factory) . '.' . $search;
+        if (\preg_match('/' . \preg_quote($replace, '/') . '$/', $path)) {
             // already replaced
             return;
         }
 
         $asset->setTargetPath(
-            preg_replace('/\.'.preg_quote($search, '/').'$/', $replace, $path)
+            \preg_replace('/\.' . \preg_quote($search, '/') . '$/', $replace, $path)
         );
     }
 
     protected function getHash(AssetInterface $asset, AssetFactory $factory)
     {
-        $hash = hash_init('sha1');
-
-        hash_update($hash, $factory->getLastModified($asset));
+        $context = \hash_init($this->options['hash_algo']);
 
         if ($asset instanceof AssetCollectionInterface) {
             foreach ($asset as $i => $leaf) {
-                $sourcePath = $leaf->getSourcePath();
-                hash_update($hash, $sourcePath ?: $i);
+                $this->updateAssetHash($leaf, $context);
             }
+        } else {
+            $this->updateAssetHash($asset, $context);
         }
 
-        return substr(hash_final($hash), 0, 7);
+        return \substr(\hash_final($context), 0, $this->options['hash_length']);
+    }
+
+    protected function updateAssetHash(AssetInterface $asset, $context)
+    {
+        $sourceRoot = $asset->getSourceRoot();
+        $sourcePath = $asset->getSourcePath();
+
+        if ($sourceRoot && $sourcePath && \file_exists($source = $sourceRoot . '/' . $sourcePath)) {
+            if (!isset($this->hashes[$source])) {
+                $this->hashes[$source] = \hash_file($this->options['hash_algo'], $source);
+            }
+
+            $data = $this->hashes[$source];
+        } else {
+            $stack = [
+                $sourceRoot,
+                $sourcePath,
+                $asset->getTargetPath(),
+            ];
+            $data  = \implode('|', $stack);
+        }
+
+        \hash_update($context, $data);
     }
 }

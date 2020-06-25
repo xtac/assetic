@@ -12,14 +12,18 @@
             "homepage": "http://kriswallsmith.net/"
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.appwhole.co.kr"
+        }
+    ],
     "require": {
-        "php": ">=5.3.1",
-        "symfony/process": "~2.1|~3.0"
-    },
-    "conflict": {
-        "twig/twig": "<1.27"
+        "php": "^7.1",
+        "symfony/process": "^4.4"
     },
     "require-dev": {
+        "appwhole/drill-framework": "^4.6|^5.0",
         "leafo/lessphp": "^0.3.7",
         "leafo/scssphp": "~0.1",
         "meenie/javascript-packer": "^1.1",
@@ -30,7 +34,7 @@
         "psr/log": "~1.0",
         "ptachoire/cssembed": "~1.0",
         "symfony/phpunit-bridge": "~2.7|~3.0",
-        "twig/twig": "~1.23|~2.0",
+        "twig/twig": "~2.0|~3.0",
         "yfix/packager": "dev-master"
     },
     "suggest": {
@@ -42,15 +46,20 @@
         "patchwork/jsqueeze": "Assetic provides the integration with the JSqueeze JavaScript compressor"
     },
     "autoload": {
-        "psr-0": { "Assetic": "src/" },
-        "files": [ "src/functions.php" ]
+        "psr-4": {
+            "Assetic\\": "src/Assetic/"
+        },
+        "files": [
+            "src/functions.php",
+            "src/aliases.php"
+        ]
     },
     "config": {
         "bin-dir": "bin"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.4-dev"
+            "dev-master": "2.0-dev"
         }
     }
 }

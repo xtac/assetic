@@ -25,13 +25,21 @@ use Assetic\Filter\FilterInterface;
 abstract class BaseAsset implements AssetInterface
 {
     private $filters;
+
     private $sourceRoot;
+
     private $sourcePath;
+
     private $sourceDir;
+
     private $targetPath;
+
     private $content;
+
     private $loaded;
+
     private $vars;
+
     private $values;
 
     /**
@@ -42,16 +50,16 @@ abstract class BaseAsset implements AssetInterface
      * @param string $sourcePath The asset path
      * @param array  $vars
      */
-    public function __construct($filters = array(), $sourceRoot = null, $sourcePath = null, array $vars = array())
+    public function __construct($filters = [], $sourceRoot = null, $sourcePath = null, array $vars = [])
     {
-        $this->filters = new FilterCollection($filters);
+        $this->filters    = new FilterCollection($filters);
         $this->sourceRoot = $sourceRoot;
         $this->sourcePath = $sourcePath;
         if ($sourcePath && $sourceRoot) {
-            $this->sourceDir = dirname("$sourceRoot/$sourcePath");
+            $this->sourceDir = \dirname("$sourceRoot/$sourcePath");
         }
-        $this->vars = $vars;
-        $this->values = array();
+        $this->vars   = $vars;
+        $this->values = [];
         $this->loaded = false;
     }
 
@@ -148,8 +156,8 @@ abstract class BaseAsset implements AssetInterface
     {
         if ($this->vars) {
             foreach ($this->vars as $var) {
-                if (false === strpos($targetPath, $var)) {
-                    throw new \RuntimeException(sprintf('The asset target path "%s" must contain the variable "{%s}".', $targetPath, $var));
+                if (false === \strpos($targetPath, $var)) {
+                    throw new \RuntimeException(\sprintf('The asset target path "%s" must contain the variable "{%s}".', $targetPath, $var));
                 }
             }
         }
@@ -165,8 +173,8 @@ abstract class BaseAsset implements AssetInterface
     public function setValues(array $values)
     {
         foreach ($values as $var => $v) {
-            if (!in_array($var, $this->vars, true)) {
-                throw new \InvalidArgumentException(sprintf('The asset with source path "%s" has no variable named "%s".', $this->sourcePath, $var));
+            if (!\in_array($var, $this->vars, true)) {
+                throw new \InvalidArgumentException(\sprintf('The asset with source path "%s" has no variable named "%s".', $this->sourcePath, $var));
             }
         }
 

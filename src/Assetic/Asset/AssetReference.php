@@ -22,14 +22,18 @@ use Assetic\Filter\FilterInterface;
 class AssetReference implements AssetInterface
 {
     private $am;
+
     private $name;
-    private $filters = array();
+
+    private $filters = [];
+
     private $clone = false;
+
     private $asset;
 
     public function __construct(AssetManager $am, $name)
     {
-        $this->am = $am;
+        $this->am   = $am;
         $this->name = $name;
     }
 
@@ -56,7 +60,7 @@ class AssetReference implements AssetInterface
 
     public function clearFilters()
     {
-        $this->filters = array();
+        $this->filters = [];
         $this->callAsset(__FUNCTION__);
     }
 
@@ -64,14 +68,14 @@ class AssetReference implements AssetInterface
     {
         $this->flushFilters();
 
-        return $this->callAsset(__FUNCTION__, array($additionalFilter));
+        return $this->callAsset(__FUNCTION__, [$additionalFilter]);
     }
 
     public function dump(FilterInterface $additionalFilter = null)
     {
         $this->flushFilters();
 
-        return $this->callAsset(__FUNCTION__, array($additionalFilter));
+        return $this->callAsset(__FUNCTION__, [$additionalFilter]);
     }
 
     public function getContent()
@@ -81,7 +85,7 @@ class AssetReference implements AssetInterface
 
     public function setContent($content)
     {
-        $this->callAsset(__FUNCTION__, array($content));
+        $this->callAsset(__FUNCTION__, [$content]);
     }
 
     public function getSourceRoot()
@@ -106,7 +110,7 @@ class AssetReference implements AssetInterface
 
     public function setTargetPath($targetPath)
     {
-        $this->callAsset(__FUNCTION__, array($targetPath));
+        $this->callAsset(__FUNCTION__, [$targetPath]);
     }
 
     public function getLastModified()
@@ -126,23 +130,23 @@ class AssetReference implements AssetInterface
 
     public function setValues(array $values)
     {
-        $this->callAsset(__FUNCTION__, array($values));
+        $this->callAsset(__FUNCTION__, [$values]);
     }
 
     // private
 
-    private function callAsset($method, $arguments = array())
+    private function callAsset($method, $arguments = [])
     {
         $asset = $this->resolve();
 
-        return call_user_func_array(array($asset, $method), $arguments);
+        return \call_user_func_array([$asset, $method], $arguments);
     }
 
     private function flushFilters()
     {
         $asset = $this->resolve();
 
-        while ($filter = array_shift($this->filters)) {
+        while ($filter = \array_shift($this->filters)) {
             $asset->ensureFilter($filter);
         }
     }

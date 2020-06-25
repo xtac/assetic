@@ -19,6 +19,7 @@ namespace Assetic\Factory\Resource;
 class DirectoryResource implements IteratorResourceInterface
 {
     private $path;
+
     private $pattern;
 
     /**
@@ -29,17 +30,17 @@ class DirectoryResource implements IteratorResourceInterface
      */
     public function __construct($path, $pattern = null)
     {
-        if (DIRECTORY_SEPARATOR != substr($path, -1)) {
+        if (DIRECTORY_SEPARATOR != \substr($path, -1)) {
             $path .= DIRECTORY_SEPARATOR;
         }
 
-        $this->path = $path;
+        $this->path    = $path;
         $this->pattern = $pattern;
     }
 
     public function isFresh($timestamp)
     {
-        if (!is_dir($this->path) || filemtime($this->path) > $timestamp) {
+        if (!\is_dir($this->path) || \filemtime($this->path) > $timestamp) {
             return false;
         }
 
@@ -57,12 +58,12 @@ class DirectoryResource implements IteratorResourceInterface
      */
     public function getContent()
     {
-        $content = array();
+        $content = [];
         foreach ($this as $resource) {
             $content[] = $resource->getContent();
         }
 
-        return implode("\n", $content);
+        return \implode("\n", $content);
     }
 
     public function __toString()
@@ -72,7 +73,7 @@ class DirectoryResource implements IteratorResourceInterface
 
     public function getIterator()
     {
-        return is_dir($this->path)
+        return \is_dir($this->path)
             ? new DirectoryResourceIterator($this->getInnerIterator())
             : new \EmptyIterator();
     }
@@ -123,7 +124,7 @@ class DirectoryResourceFilterIterator extends \RecursiveFilterIterator
             return '.' != $name[0];
         }
 
-        return null === $this->pattern || 0 < preg_match($this->pattern, $name);
+        return null === $this->pattern || 0 < \preg_match($this->pattern, $name);
     }
 
     public function getChildren()

@@ -22,32 +22,40 @@ use Assetic\Filter\FilterInterface;
 abstract class BaseCompilerFilter implements FilterInterface
 {
     // compilation levels
-    const COMPILE_WHITESPACE_ONLY = 'WHITESPACE_ONLY';
-    const COMPILE_SIMPLE_OPTIMIZATIONS = 'SIMPLE_OPTIMIZATIONS';
+    const COMPILE_WHITESPACE_ONLY        = 'WHITESPACE_ONLY';
+    const COMPILE_SIMPLE_OPTIMIZATIONS   = 'SIMPLE_OPTIMIZATIONS';
     const COMPILE_ADVANCED_OPTIMIZATIONS = 'ADVANCED_OPTIMIZATIONS';
 
     // formatting modes
-    const FORMAT_PRETTY_PRINT = 'pretty_print';
+    const FORMAT_PRETTY_PRINT          = 'pretty_print';
     const FORMAT_PRINT_INPUT_DELIMITER = 'print_input_delimiter';
 
     // warning levels
-    const LEVEL_QUIET = 'QUIET';
+    const LEVEL_QUIET   = 'QUIET';
     const LEVEL_DEFAULT = 'DEFAULT';
     const LEVEL_VERBOSE = 'VERBOSE';
 
     // languages
-    const LANGUAGE_ECMASCRIPT3 = 'ECMASCRIPT3';
-    const LANGUAGE_ECMASCRIPT5 = 'ECMASCRIPT5';
+    const LANGUAGE_ECMASCRIPT3        = 'ECMASCRIPT3';
+    const LANGUAGE_ECMASCRIPT5        = 'ECMASCRIPT5';
     const LANGUAGE_ECMASCRIPT5_STRICT = 'ECMASCRIPT5_STRICT';
 
     protected $timeout;
+
     protected $compilationLevel;
+
     protected $jsExterns;
+
     protected $externsUrl;
+
     protected $excludeDefaultExterns;
+
     protected $formatting;
+
     protected $useClosureLibrary;
+
     protected $warningLevel;
+
     protected $language;
 
     public function setTimeout($timeout)

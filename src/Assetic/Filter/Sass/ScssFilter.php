@@ -14,8 +14,9 @@ namespace Assetic\Filter\Sass;
 /**
  * Loads SCSS files.
  *
- * @link http://sass-lang.com/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://sass-lang.com/
  */
 class ScssFilter extends SassFilter
 {

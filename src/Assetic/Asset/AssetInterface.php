@@ -92,7 +92,7 @@ interface AssetInterface
      *  * 'http://example.com'
      *  * null
      *
-     * @return string|null The asset's root
+     * @return null|string The asset's root
      */
     public function getSourceRoot();
 
@@ -108,7 +108,7 @@ interface AssetInterface
      *  * 'main.js'
      *  * null
      *
-     * @return string|null The source asset path
+     * @return null|string The source asset path
      */
     public function getSourcePath();
 
@@ -118,14 +118,14 @@ interface AssetInterface
      * The source directory is the directory the asset was located in
      * and can be used to resolve references relative to an asset.
      *
-     * @return string|null The asset's source directory
+     * @return null|string The asset's source directory
      */
     public function getSourceDirectory();
 
     /**
      * Returns the URL for the current asset.
      *
-     * @return string|null A web URL where the asset will be dumped
+     * @return null|string A web URL where the asset will be dumped
      */
     public function getTargetPath();
 
@@ -139,7 +139,7 @@ interface AssetInterface
     /**
      * Returns the time the current asset was last modified.
      *
-     * @return integer|null A UNIX timestamp
+     * @return null|int A UNIX timestamp
      */
     public function getLastModified();
 

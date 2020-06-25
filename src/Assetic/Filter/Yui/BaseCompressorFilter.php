@@ -19,20 +19,25 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Base YUI compressor filter.
  *
- * @link http://developer.yahoo.com/yui/compressor/
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://developer.yahoo.com/yui/compressor/
  */
 abstract class BaseCompressorFilter extends BaseProcessFilter
 {
     private $jarPath;
+
     private $javaPath;
+
     private $charset;
+
     private $lineBreak;
+
     private $stackSize;
 
     public function __construct($jarPath, $javaPath = '/usr/bin/java')
     {
-        $this->jarPath = $jarPath;
+        $this->jarPath  = $jarPath;
         $this->javaPath = $javaPath;
     }
 
@@ -64,12 +69,12 @@ abstract class BaseCompressorFilter extends BaseProcessFilter
      *
      * @return string The compressed content
      */
-    protected function compress($content, $type, $options = array())
+    protected function compress($content, $type, $options = [])
     {
-        $pb = $this->createProcessBuilder(array($this->javaPath));
+        $pb = $this->createProcessBuilder([$this->javaPath]);
 
         if (null !== $this->stackSize) {
-            $pb->add('-Xss'.$this->stackSize);
+            $pb->add('-Xss' . $this->stackSize);
         }
 
         $pb->add('-jar')->add($this->jarPath);
@@ -88,29 +93,29 @@ abstract class BaseCompressorFilter extends BaseProcessFilter
 
         // input and output files
         $tempDir = FilesystemUtils::getTemporaryDirectory();
-        $input = tempnam($tempDir, 'assetic_yui_input');
-        $output = tempnam($tempDir, 'assetic_yui_output');
-        file_put_contents($input, $content);
+        $input   = \tempnam($tempDir, 'assetic_yui_input');
+        $output  = \tempnam($tempDir, 'assetic_yui_output');
+        \file_put_contents($input, $content);
         $pb->add('-o')->add($output)->add('--type')->add($type)->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
-            if (file_exists($output)) {
-                unlink($output);
+            if (\file_exists($output)) {
+                \unlink($output);
             }
 
             throw FilterException::fromProcess($proc)->setInput($content);
         }
 
-        if (!file_exists($output)) {
+        if (!\file_exists($output)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $retval = file_get_contents($output);
-        unlink($output);
+        $retval = \file_get_contents($output);
+        \unlink($output);
 
         return $retval;
     }

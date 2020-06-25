@@ -18,16 +18,20 @@ use Assetic\Util\FilesystemUtils;
 /**
  * UglifyCss filter.
  *
- * @link https://github.com/fmarcia/UglifyCSS
  * @author Franck Marcia <franck.marcia@gmail.com>
+ *
+ * @see https://github.com/fmarcia/UglifyCSS
  */
 class UglifyCssFilter extends BaseNodeFilter
 {
     private $uglifycssBin;
+
     private $nodeBin;
 
     private $expandVars;
+
     private $uglyComments;
+
     private $cuteComments;
 
     /**
@@ -37,11 +41,12 @@ class UglifyCssFilter extends BaseNodeFilter
     public function __construct($uglifycssBin = '/usr/bin/uglifycss', $nodeBin = null)
     {
         $this->uglifycssBin = $uglifycssBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin      = $nodeBin;
     }
 
     /**
      * Expand variables
+     *
      * @param bool $expandVars True to enable
      */
     public function setExpandVars($expandVars)
@@ -51,6 +56,7 @@ class UglifyCssFilter extends BaseNodeFilter
 
     /**
      * Remove newlines within preserved comments
+     *
      * @param bool $uglyComments True to enable
      */
     public function setUglyComments($uglyComments)
@@ -60,6 +66,7 @@ class UglifyCssFilter extends BaseNodeFilter
 
     /**
      * Preserve newlines within and around preserved comments
+     *
      * @param bool $cuteComments True to enable
      */
     public function setCuteComments($cuteComments)
@@ -69,6 +76,8 @@ class UglifyCssFilter extends BaseNodeFilter
 
     /**
      * @see Assetic\Filter\FilterInterface::filterLoad()
+     *
+     * @param AssetInterface $asset
      */
     public function filterLoad(AssetInterface $asset)
     {
@@ -78,12 +87,14 @@ class UglifyCssFilter extends BaseNodeFilter
      * Run the asset through UglifyJs
      *
      * @see Assetic\Filter\FilterInterface::filterDump()
+     *
+     * @param AssetInterface $asset
      */
     public function filterDump(AssetInterface $asset)
     {
         $pb = $this->createProcessBuilder($this->nodeBin
-            ? array($this->nodeBin, $this->uglifycssBin)
-            : array($this->uglifycssBin));
+            ? [$this->nodeBin, $this->uglifycssBin]
+            : [$this->uglifycssBin]);
 
         if ($this->expandVars) {
             $pb->add('--expand-vars');
@@ -100,12 +111,12 @@ class UglifyCssFilter extends BaseNodeFilter
         // input and output files
         $input = FilesystemUtils::createTemporaryFile('uglifycss');
 
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
         $pb->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (127 === $code) {
             throw new \RuntimeException('Path to node executable could not be resolved.');

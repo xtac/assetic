@@ -18,25 +18,34 @@ use Assetic\Util\FilesystemUtils;
 /**
  * UglifyJs2 filter.
  *
- * @link http://lisperator.net/uglifyjs
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://lisperator.net/uglifyjs
  */
 class UglifyJs2Filter extends BaseNodeFilter
 {
     private $uglifyjsBin;
+
     private $nodeBin;
+
     private $compress;
+
     private $beautify;
+
     private $mangle;
+
     private $screwIe8;
+
     private $comments;
+
     private $wrap;
+
     private $defines;
 
     public function __construct($uglifyjsBin = '/usr/bin/uglifyjs', $nodeBin = null)
     {
         $this->uglifyjsBin = $uglifyjsBin;
-        $this->nodeBin = $nodeBin;
+        $this->nodeBin     = $nodeBin;
     }
 
     public function setCompress($compress)
@@ -80,16 +89,17 @@ class UglifyJs2Filter extends BaseNodeFilter
 
     public function filterDump(AssetInterface $asset)
     {
+        return;
         $pb = $this->createProcessBuilder(
             $this->nodeBin
-            ? array($this->nodeBin, $this->uglifyjsBin)
-            : array($this->uglifyjsBin)
+            ? [$this->nodeBin, $this->uglifyjsBin]
+            : [$this->uglifyjsBin]
         );
 
         if ($this->compress) {
             $pb->add('--compress');
 
-            if (is_string($this->compress) && !empty($this->compress)) {
+            if (\is_string($this->compress) && !empty($this->compress)) {
                 $pb->add($this->compress);
             }
         }
@@ -115,23 +125,23 @@ class UglifyJs2Filter extends BaseNodeFilter
         }
 
         if ($this->defines) {
-            $pb->add('--define')->add(implode(',', $this->defines));
+            $pb->add('--define')->add(\implode(',', $this->defines));
         }
 
         // input and output files
         $input  = FilesystemUtils::createTemporaryFile('uglifyjs2_in');
         $output = FilesystemUtils::createTemporaryFile('uglifyjs2_out');
 
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
         $pb->add('-o')->add($output)->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
-            if (file_exists($output)) {
-                unlink($output);
+            if (\file_exists($output)) {
+                \unlink($output);
             }
 
             if (127 === $code) {
@@ -141,12 +151,12 @@ class UglifyJs2Filter extends BaseNodeFilter
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        if (!file_exists($output)) {
+        if (!\file_exists($output)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $asset->setContent(file_get_contents($output));
+        $asset->setContent(\file_get_contents($output));
 
-        unlink($output);
+        \unlink($output);
     }
 }

@@ -19,13 +19,16 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Loads STYL files.
  *
- * @link http://learnboost.github.com/stylus/
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @see http://learnboost.github.com/stylus/
  */
 class StylusFilter extends BaseNodeFilter implements DependencyExtractorInterface
 {
     private $nodeBin;
+
     private $compress;
+
     private $useNib;
 
     /**
@@ -34,7 +37,7 @@ class StylusFilter extends BaseNodeFilter implements DependencyExtractorInterfac
      * @param string $nodeBin   The path to the node binary
      * @param array  $nodePaths An array of node paths
      */
-    public function __construct($nodeBin = '/usr/bin/node', array $nodePaths = array())
+    public function __construct($nodeBin = '/usr/bin/node', array $nodePaths = [])
     {
         $this->nodeBin = $nodeBin;
         $this->setNodePaths($nodePaths);
@@ -43,7 +46,7 @@ class StylusFilter extends BaseNodeFilter implements DependencyExtractorInterfac
     /**
      * Enable output compression.
      *
-     * @param boolean $compress
+     * @param bool $compress
      */
     public function setCompress($compress)
     {
@@ -53,7 +56,7 @@ class StylusFilter extends BaseNodeFilter implements DependencyExtractorInterfac
     /**
      * Enable the use of Nib
      *
-     * @param boolean $useNib
+     * @param bool $useNib
      */
     public function setUseNib($useNib)
     {
@@ -81,10 +84,10 @@ stylus(%s, %s)%s.render(function(e, css){
 EOF;
 
         // parser options
-        $parserOptions = array();
+        $parserOptions = [];
         if ($dir = $asset->getSourceDirectory()) {
-            $parserOptions['paths'] = array($dir);
-            $parserOptions['filename'] = basename($asset->getSourcePath());
+            $parserOptions['paths']    = [$dir];
+            $parserOptions['filename'] = \basename($asset->getSourcePath());
         }
 
         if (null !== $this->compress) {
@@ -94,15 +97,16 @@ EOF;
         $pb = $this->createProcessBuilder();
 
         $pb->add($this->nodeBin)->add($input = FilesystemUtils::createTemporaryFile('stylus'));
-        file_put_contents($input, sprintf($format,
-            json_encode($asset->getContent()),
-            json_encode($parserOptions),
+        \file_put_contents($input, \sprintf(
+            $format,
+            \json_encode($asset->getContent()),
+            \json_encode($parserOptions),
             $this->useNib ? '.use(require(\'nib\')())' : ''
         ));
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
@@ -121,6 +125,6 @@ EOF;
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
         // todo
-        return array();
+        return [];
     }
 }

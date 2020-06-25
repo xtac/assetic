@@ -18,8 +18,9 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Runs assets through pngout.
  *
- * @link http://advsys.net/ken/utils.htm#pngout
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
+ *
+ * @see http://advsys.net/ken/utils.htm#pngout
  */
 class PngoutFilter extends BaseProcessFilter
 {
@@ -46,9 +47,13 @@ class PngoutFilter extends BaseProcessFilter
     const STRATEGY_UNCOMPRESSED  = '4';
 
     private $pngoutBin;
+
     private $color;
+
     private $filter;
+
     private $strategy;
+
     private $blockSplitThreshold;
 
     /**
@@ -87,42 +92,43 @@ class PngoutFilter extends BaseProcessFilter
 
     public function filterDump(AssetInterface $asset)
     {
-        $pb = $this->createProcessBuilder(array($this->pngoutBin));
+        $pb = $this->createProcessBuilder([$this->pngoutBin]);
 
         if (null !== $this->color) {
-            $pb->add('-c'.$this->color);
+            $pb->add('-c' . $this->color);
         }
 
         if (null !== $this->filter) {
-            $pb->add('-f'.$this->filter);
+            $pb->add('-f' . $this->filter);
         }
 
         if (null !== $this->strategy) {
-            $pb->add('-s'.$this->strategy);
+            $pb->add('-s' . $this->strategy);
         }
 
         if (null !== $this->blockSplitThreshold) {
-            $pb->add('-b'.$this->blockSplitThreshold);
+            $pb->add('-b' . $this->blockSplitThreshold);
         }
 
         $pb->add($input = FilesystemUtils::createTemporaryFile('pngout_in'));
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $output = FilesystemUtils::createTemporaryFile('pngout_out');
-        unlink($output);
+        \unlink($output);
         $pb->add($output .= '.png');
 
         $proc = $pb->getProcess();
         $code = $proc->run();
 
         if (0 !== $code) {
-            unlink($input);
+            \unlink($input);
+
             throw FilterException::fromProcess($proc)->setInput($asset->getContent());
         }
 
-        $asset->setContent(file_get_contents($output));
+        $asset->setContent(\file_get_contents($output));
 
-        unlink($input);
-        unlink($output);
+        \unlink($input);
+        \unlink($output);
     }
 }

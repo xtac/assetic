@@ -22,22 +22,23 @@ use Assetic\Util\VarUtils;
 class GlobAsset extends AssetCollection
 {
     private $globs;
+
     private $initialized;
 
     /**
      * Constructor.
      *
-     * @param string|array $globs   A single glob path or array of paths
+     * @param array|string $globs   A single glob path or array of paths
      * @param array        $filters An array of filters
      * @param string       $root    The root directory
      * @param array        $vars
      */
-    public function __construct($globs, $filters = array(), $root = null, array $vars = array())
+    public function __construct($globs, $filters = [], $root = null, array $vars = [])
     {
-        $this->globs = (array) $globs;
+        $this->globs       = (array) $globs;
         $this->initialized = false;
 
-        parent::__construct(array(), $filters, $root, $vars);
+        parent::__construct([], $filters, $root, $vars);
     }
 
     public function all()
@@ -99,10 +100,10 @@ class GlobAsset extends AssetCollection
         foreach ($this->globs as $glob) {
             $glob = VarUtils::resolve($glob, $this->getVars(), $this->getValues());
 
-            if (false !== $paths = glob($glob)) {
+            if (false !== $paths = \glob($glob)) {
                 foreach ($paths as $path) {
-                    if (is_file($path)) {
-                        $asset = new FileAsset($path, array(), $this->getSourceRoot(), null, $this->getVars());
+                    if (\is_file($path)) {
+                        $asset = new FileAsset($path, [], $this->getSourceRoot(), null, $this->getVars());
                         $asset->setValues($this->getValues());
                         $this->add($asset);
                     }

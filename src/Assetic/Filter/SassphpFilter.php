@@ -11,9 +11,8 @@
 
 namespace Assetic\Filter;
 
-use Assetic\Factory\AssetFactory;
 use Assetic\Asset\AssetInterface;
-use Assetic\Filter\DependencyExtractorInterface;
+use Assetic\Factory\AssetFactory;
 use Assetic\Util\CssUtils;
 
 /**
@@ -23,18 +22,19 @@ use Assetic\Util\CssUtils;
  */
 class SassphpFilter implements DependencyExtractorInterface
 {
-    private $includePaths = array();
+    private $includePaths = [];
+
     private $outputStyle;
 
     public function filterLoad(AssetInterface $asset)
     {
         $sass = new \Sass();
 
-        $includePaths = array_merge(
-            array($asset->getSourceDirectory()),
+        $includePaths = \array_merge(
+            [$asset->getSourceDirectory()],
             $this->includePaths
         );
-        $sass->setIncludePath(implode(':', $includePaths));
+        $sass->setIncludePath(\implode(':', $includePaths));
 
         if ($this->outputStyle) {
             $sass->setStyle($this->outputStyle);
@@ -66,11 +66,11 @@ class SassphpFilter implements DependencyExtractorInterface
 
     public function getChildren(AssetFactory $factory, $content, $loadPath = null)
     {
-        $children = array();
+        $children = [];
 
         $includePaths = $this->includePaths;
-        if (null !== $loadPath && !in_array($loadPath, $includePaths)) {
-            array_unshift($includePaths, $loadPath);
+        if (null !== $loadPath && !\in_array($loadPath, $includePaths)) {
+            \array_unshift($includePaths, $loadPath);
         }
 
         if (empty($includePaths)) {
@@ -78,30 +78,30 @@ class SassphpFilter implements DependencyExtractorInterface
         }
 
         foreach (CssUtils::extractImports($content) as $reference) {
-            if ('.css' === substr($reference, -4)) {
+            if ('.css' === \substr($reference, -4)) {
                 continue;
             }
 
             // the reference may or may not have an extension or be a partial
-            if (pathinfo($reference, PATHINFO_EXTENSION)) {
-                $needles = array(
+            if (\pathinfo($reference, PATHINFO_EXTENSION)) {
+                $needles = [
                     $reference,
                     $this->partialize($reference),
-                );
+                ];
             } else {
-                $needles = array(
+                $needles = [
                     $reference . '.scss',
                     $this->partialize($reference) . '.scss',
-                );
+                ];
             }
 
             foreach ($includePaths as $includePath) {
                 foreach ($needles as $needle) {
-                    if (file_exists($file = $includePath . '/' . $needle)) {
-                        $child = $factory->createAsset($file, array(), array('root' => $includePath));
+                    if (\file_exists($file = $includePath . '/' . $needle)) {
+                        $child      = $factory->createAsset($file, [], ['root' => $includePath]);
                         $children[] = $child;
                         $child->load();
-                        $children = array_merge(
+                        $children = \array_merge(
                             $children,
                             $this->getChildren($factory, $child->getContent(), $includePath)
                         );
@@ -115,7 +115,7 @@ class SassphpFilter implements DependencyExtractorInterface
 
     private function partialize($reference)
     {
-        $parts = pathinfo($reference);
+        $parts = \pathinfo($reference);
 
         if ('.' === $parts['dirname']) {
             $partial = '_' . $parts['filename'];

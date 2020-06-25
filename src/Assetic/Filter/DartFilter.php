@@ -18,7 +18,7 @@ use Assetic\Util\FilesystemUtils;
 /**
  * Compiles Dart into Javascript.
  *
- * @link http://dartlang.org/
+ * @see http://dartlang.org/
  */
 class DartFilter extends BaseProcessFilter
 {
@@ -34,17 +34,16 @@ class DartFilter extends BaseProcessFilter
         $input  = FilesystemUtils::createTemporaryFile('dart');
         $output = FilesystemUtils::createTemporaryFile('dart');
 
-        file_put_contents($input, $asset->getContent());
+        \file_put_contents($input, $asset->getContent());
 
         $pb = $this->createProcessBuilder()
             ->add($this->dartBin)
-            ->add('-o'.$output)
-            ->add($input)
-        ;
+            ->add('-o' . $output)
+            ->add($input);
 
         $proc = $pb->getProcess();
         $code = $proc->run();
-        unlink($input);
+        \unlink($input);
 
         if (0 !== $code) {
             $this->cleanup($output);
@@ -52,11 +51,11 @@ class DartFilter extends BaseProcessFilter
             throw FilterException::fromProcess($proc);
         }
 
-        if (!file_exists($output)) {
+        if (!\file_exists($output)) {
             throw new \RuntimeException('Error creating output file.');
         }
 
-        $asset->setContent(file_get_contents($output));
+        $asset->setContent(\file_get_contents($output));
         $this->cleanup($output);
     }
 
@@ -66,8 +65,8 @@ class DartFilter extends BaseProcessFilter
 
     private function cleanup($file)
     {
-        foreach (glob($file.'*') as $related) {
-            unlink($related);
+        foreach (\glob($file . '*') as $related) {
+            \unlink($related);
         }
     }
 }
