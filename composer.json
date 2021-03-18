@@ -20,17 +20,17 @@
     ],
     "require": {
         "php": "^7.1",
-        "symfony/process": "^4.4|^5.0"
+        "symfony/process": "^5.0"
     },
     "require-dev": {
-        "appwhole/drill-framework": "^4.6|^5.0",
+        "appwhole/drill-framework": "^6.0",
         "leafo/lessphp": "^0.3.7",
         "leafo/scssphp": "~0.1",
         "meenie/javascript-packer": "^1.1",
         "mrclay/minify": "<2.3",
         "natxet/cssmin": "3.0.4",
         "patchwork/jsqueeze": "~1.0|~2.0",
-        "phpunit/phpunit": "~4.8 || ^5.6",
+        "phpunit/phpunit": "^8.5",
         "psr/log": "~1.0",
         "ptachoire/cssembed": "~1.0",
         "symfony/phpunit-bridge": "~2.7|~3.0",
@@ -50,8 +50,7 @@
             "Assetic\\": "src/Assetic/"
         },
         "files": [
-            "src/functions.php",
-            "src/aliases.php"
+            "src/functions.php"
         ]
     },
     "config": {
@@ -59,7 +58,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "3.0-dev"
         }
     }
 }
